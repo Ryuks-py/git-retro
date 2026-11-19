@@ -121,6 +121,10 @@ python3 -m unittest discover -s tests -t .
 python3 -m git_retro --demo        # regenerate with fake data
 ```
 
+## Author
+
+Made by David Montanha · [portfolio](https://ryuks-py.github.io)
+
 ## License
 
 MIT. Bundled fonts: [Bricolage Grotesque](https://github.com/ateliertriay/bricolage) and [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono), both under the SIL Open Font License (see `git_retro/fonts/`).
