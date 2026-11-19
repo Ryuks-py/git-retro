@@ -102,7 +102,9 @@ body{display:grid;place-items:center;user-select:none;-webkit-user-select:none}
 .weeks i{display:block;width:100%;border-radius:1.4cqw;background:var(--ac);height:var(--h);transform:scaleY(0);transform-origin:bottom}
 .on .weeks i{transition:transform 1s var(--ease);transition-delay:calc(.3s + var(--i) * 60ms);transform:scaleY(1)}
 .weeks span{font:600 2.8cqw var(--mono);opacity:.7}
-.emoji{font-size:30cqw;line-height:1}
+.ico{display:block;width:32cqw;height:32cqw;overflow:visible}
+.ico.sm{display:inline-block;width:5.2cqw;height:5.2cqw;vertical-align:-.9cqw;margin-right:1cqw}
+.hint{font:500 3cqw/1.4 var(--mono);opacity:.6}
 
 .summary{gap:2.4cqw;padding-top:17cqw}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:2.4cqw}
@@ -142,17 +144,17 @@ const T = {
     days: 'dias seguidos', streak: (a, b) => `De ${a} a ${b} sem quebrar a corrente.`, streak1: 'Commit é tipo academia: o importante é voltar.',
     clock: 'Seu relógio', peak: h => `Seu horário de pico é às <b>${h}h</b>.`,
     youare: 'Você é', personas: {
-      owl: ['Coruja da madrugada', '🦉', p => `${p}% dos seus commits saíram entre meia-noite e 5h. O deploy de produção agradece (ou não).`],
-      weekend: ['Guerreiro do fim de semana', '⚔️', p => `${p}% dos commits caíram no sábado ou no domingo. Descanso é um conceito.`],
-      marathon: ['Maratonista', '🏃', p => `${p} dias seguidos commitando. Constância é o seu superpoder.`],
-      cleaner: ['Faxineiro de código', '🧹', p => `Para cada 100 linhas que escreveu, você apagou ${p}. Código bom é o que sobra.`],
-      firefighter: ['Bombeiro', '🧯', p => `${p}% dos seus commits foram correções. Pegou fogo, você estava lá.`],
-      polyglot: ['Poliglota', '🌍', p => `${p} linguagens com peso de verdade no seu ano. Você não escolhe, você domina.`],
-      burst: ['Modo turbo', '⚡', p => `${p}% dos seus commits saíram em só 10% dos dias. Quando você engata, ninguém segura.`],
-      loyal: ['Fiel ao projeto', '💍', p => `${p}% dos commits no mesmo repositório. Relacionamento sério.`],
-      early: ['Madrugador', '☀️', p => `${p}% dos commits antes das 9h. Você commita antes do café esfriar.`],
-      night: ['Turno da noite', '🌙', p => `${p}% dos commits depois das 18h. Seu código acorda quando o sol se põe.`],
-      office: ['Expediente comercial', '💼', p => `${p}% dos commits entre 9h e 18h. Constante como um cron job.`],
+      owl: ['Coruja da madrugada', p => `${p}% dos seus commits saíram entre meia-noite e 5h. O deploy de produção agradece (ou não).`],
+      weekend: ['Guerreiro do fim de semana', p => `${p}% dos commits caíram no sábado ou no domingo. Descanso é um conceito.`],
+      marathon: ['Maratonista', p => `${p} dias seguidos commitando. Constância é o seu superpoder.`],
+      cleaner: ['Faxineiro de código', p => `Para cada 100 linhas que escreveu, você apagou ${p}. Código bom é o que sobra.`],
+      firefighter: ['Bombeiro', p => `${p}% dos seus commits foram correções. Pegou fogo, você estava lá.`],
+      polyglot: ['Poliglota', p => `${p} linguagens com peso de verdade no seu ano. Você não escolhe, você domina.`],
+      burst: ['Modo turbo', p => `${p}% dos seus commits saíram em só 10% dos dias. Quando você engata, ninguém segura.`],
+      loyal: ['Fiel ao projeto', p => `${p}% dos commits no mesmo repositório. Relacionamento sério.`],
+      early: ['Madrugador', p => `${p}% dos commits antes das 9h. Você commita antes do café esfriar.`],
+      night: ['Turno da noite', p => `${p}% dos commits depois das 18h. Seu código acorda quando o sol se põe.`],
+      office: ['Expediente comercial', p => `${p}% dos commits entre 9h e 18h. Constante como um cron job.`],
     },
     latest: 'O commit mais tarde', at: (d, r) => `${d} · ${r}`,
     langs: 'Suas linguagens', lines_: 'linhas', repos: 'Onde você mais mexeu',
@@ -163,7 +165,9 @@ const T = {
     vs: y => `Em relação a ${y}`, c_commits: 'commits', c_days: 'dias ativos', c_streak: 'maior sequência', c_added: 'linhas escritas',
     swapped: (a, b) => `Você trocou <b>${a}</b> por <b>${b}</b>.`, kept: a => `<b>${a}</b> segue no topo.`, vsShort: y => `vs ${y}`,
     summary: y => `Meu ${y} no git`, s_commits: 'commits', s_repos: 'repositórios', s_days: 'dias ativos', s_streak: 'dias seguidos',
-    s_added: 'linhas escritas', s_lang: 'linguagem do ano', download: 'Baixar imagem', again: 'Ver de novo', made: 'gerado localmente com git-retro · nada saiu do seu computador',
+    s_added: 'linhas escritas', s_lang: 'linguagem do ano', download: 'Baixar imagem', again: 'Ver de novo', share: 'Postar no Instagram',
+    shareHint: 'Para postar no Instagram: baixe a imagem e mande para o celular, ou abra este arquivo no celular e use o botão de compartilhar.',
+    shareText: y => `Meu ${y} no git. Gere o seu: github.com/Ryuks-py/git-retro`, made: 'gerado localmente com git-retro · nada saiu do seu computador',
     cardTitle: y => `MEU ${y} NO GIT`, cardFoot: 'git-retro', peakK: 'horário de pico', langsK: 'linguagens', cardCommits: 'commits',
   },
   en: {
@@ -177,17 +181,17 @@ const T = {
     days: 'days in a row', streak: (a, b) => `From ${a} to ${b} without breaking the chain.`, streak1: 'Commits are like the gym: what matters is coming back.',
     clock: 'Your clock', peak: h => `Your peak hour is <b>${h}:00</b>.`,
     youare: 'You are', personas: {
-      owl: ['Night owl', '🦉', p => `${p}% of your commits landed between midnight and 5am. Production says thanks (or not).`],
-      weekend: ['Weekend warrior', '⚔️', p => `${p}% of your commits happened on Saturday or Sunday. Rest is a concept.`],
-      marathon: ['Marathoner', '🏃', p => `${p} days in a row with commits. Consistency is your superpower.`],
-      cleaner: ['Code janitor', '🧹', p => `For every 100 lines you wrote, you deleted ${p}. Good code is what’s left.`],
-      firefighter: ['Firefighter', '🧯', p => `${p}% of your commits were fixes. Something caught fire, you were there.`],
-      polyglot: ['Polyglot', '🌍', p => `${p} languages carried real weight in your year.`],
-      burst: ['Turbo mode', '⚡', p => `${p}% of your commits came out on just 10% of your days. Once you get going, nobody stops you.`],
-      loyal: ['Loyal to one', '💍', p => `${p}% of your commits went to the same repository. Serious relationship.`],
-      early: ['Early bird', '☀️', p => `${p}% of your commits before 9am. Before the coffee gets cold.`],
-      night: ['Night shift', '🌙', p => `${p}% of your commits after 6pm. Your code wakes up when the sun goes down.`],
-      office: ['Office hours', '💼', p => `${p}% of your commits between 9 and 6. Steady as a cron job.`],
+      owl: ['Night owl', p => `${p}% of your commits landed between midnight and 5am. Production says thanks (or not).`],
+      weekend: ['Weekend warrior', p => `${p}% of your commits happened on Saturday or Sunday. Rest is a concept.`],
+      marathon: ['Marathoner', p => `${p} days in a row with commits. Consistency is your superpower.`],
+      cleaner: ['Code janitor', p => `For every 100 lines you wrote, you deleted ${p}. Good code is what’s left.`],
+      firefighter: ['Firefighter', p => `${p}% of your commits were fixes. Something caught fire, you were there.`],
+      polyglot: ['Polyglot', p => `${p} languages carried real weight in your year.`],
+      burst: ['Turbo mode', p => `${p}% of your commits came out on just 10% of your days. Once you get going, nobody stops you.`],
+      loyal: ['Loyal to one', p => `${p}% of your commits went to the same repository. Serious relationship.`],
+      early: ['Early bird', p => `${p}% of your commits before 9am. Before the coffee gets cold.`],
+      night: ['Night shift', p => `${p}% of your commits after 6pm. Your code wakes up when the sun goes down.`],
+      office: ['Office hours', p => `${p}% of your commits between 9 and 6. Steady as a cron job.`],
     },
     latest: 'Your latest commit', at: (d, r) => `${d} · ${r}`,
     langs: 'Your languages', lines_: 'lines', repos: 'Where you spent your time',
@@ -198,13 +202,30 @@ const T = {
     vs: y => `Compared to ${y}`, c_commits: 'commits', c_days: 'active days', c_streak: 'longest streak', c_added: 'lines written',
     swapped: (a, b) => `You swapped <b>${a}</b> for <b>${b}</b>.`, kept: a => `<b>${a}</b> is still on top.`, vsShort: y => `vs ${y}`,
     summary: y => `My ${y} in git`, s_commits: 'commits', s_repos: 'repositories', s_days: 'active days', s_streak: 'day streak',
-    s_added: 'lines written', s_lang: 'language of the year', download: 'Download image', again: 'Watch again', made: 'generated locally with git-retro · nothing left your computer',
+    s_added: 'lines written', s_lang: 'language of the year', download: 'Download image', again: 'Watch again', share: 'Share to Instagram',
+    shareHint: 'To post on Instagram: download the image and send it to your phone, or open this file on your phone and use the share button.',
+    shareText: y => `My ${y} in git. Make yours: github.com/Ryuks-py/git-retro`, made: 'generated locally with git-retro · nothing left your computer',
     cardTitle: y => `MY ${y} IN GIT`, cardFoot: 'git-retro', peakK: 'peak hour', langsK: 'languages', cardCommits: 'commits',
   },
 }[L];
 document.documentElement.lang = L === 'pt' ? 'pt-BR' : 'en';
 
 const $ = s => document.querySelector(s);
+/* ícones das personalidades: traço de 7 em 100, cor do texto do slide */
+const ICO = {
+  owl: '<path d="M18 56c0 22 14 34 32 34s32-12 32-34"/><path d="M18 34 14 12 34 26M82 34 86 12 66 26"/><circle cx="34" cy="48" r="15"/><circle cx="66" cy="48" r="15"/><circle cx="34" cy="48" r="5" fill="currentColor"/><circle cx="66" cy="48" r="5" fill="currentColor"/><path d="M44 66 50 76 56 66"/>',
+  weekend: '<rect x="12" y="18" width="76" height="70" rx="12"/><path d="M12 38h76M32 10v14M68 10v14"/><circle cx="32" cy="56" r="3" fill="currentColor"/><circle cx="50" cy="56" r="3" fill="currentColor"/><circle cx="32" cy="72" r="3" fill="currentColor"/><circle cx="50" cy="72" r="3" fill="currentColor"/><rect x="62" y="50" width="16" height="28" rx="4" fill="currentColor"/>',
+  marathon: '<path d="M22 92V10"/><path d="M22 14h58L68 32l12 18H22" fill="currentColor"/>',
+  cleaner: '<path d="M76 8 52 50"/><path d="M36 42l32 18-8 30H14z"/><path d="M28 74l-4 14M40 76l-3 13M52 78l-2 11"/>',
+  firefighter: '<path d="M50 92c-18 0-30-12-30-28 0-16 12-24 16-40 8 8 10 16 10 22 4-4 6-10 6-16 12 10 28 24 28 40 0 12-12 22-30 22z"/><path d="M50 92c-8 0-12-6-12-12 0-8 6-12 10-20 6 6 14 12 14 20 0 6-4 12-12 12z" fill="currentColor"/>',
+  polyglot: '<circle cx="50" cy="50" r="38"/><ellipse cx="50" cy="50" rx="16" ry="38"/><path d="M12 50h76M19 30h62M19 70h62"/>',
+  burst: '<path d="M58 6 20 56h28l-8 38 42-54H54z" fill="currentColor"/>',
+  loyal: '<circle cx="50" cy="62" r="28"/><path d="M36 14h28l10 12-24 18-24-18z" fill="currentColor"/>',
+  early: '<circle cx="50" cy="50" r="17" fill="currentColor"/><path d="M50 8v12M50 80v12M8 50h12M80 50h12M20 20l9 9M71 71l9 9M80 20l-9 9M29 71l-9 9"/>',
+  night: '<path d="M60 10a40 40 0 1 0 30 52A32 32 0 0 1 60 10z" fill="currentColor"/><path d="M80 14v12M74 20h12"/>',
+  office: '<rect x="10" y="30" width="80" height="56" rx="10"/><path d="M36 30v-8a6 6 0 0 1 6-6h16a6 6 0 0 1 6 6v8M10 54h80"/><rect x="43" y="47" width="14" height="14" rx="3" fill="currentColor"/>',
+};
+const icon = (k, cls = '') => `<svg class="ico ${cls}" viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICO[k] || ICO.office}</svg>`;
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const nf = n => Math.round(n).toLocaleString(L === 'pt' ? 'pt-BR' : 'en-US');
 const pd = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
@@ -288,8 +309,8 @@ S.push({ th: 'lime', html: `${rv(`<div class="h">${esc(T.weekdays)}</div>`, 0)}
   ${rv(`<p class="p">${T.bestwd(T.wdFull[wbest])}</p>`, .9)}` });
 
 const pc = T.personas[D.persona] || T.personas.office;
-S.push({ th: 'pink', html: `${rv(`<div class="k">${esc(T.youare)}</div>`, 0)}<div class="emoji pop" style="--d:.2s">${pc[1]}</div>
-  <div class="h" style="font-size:12cqw">${chars(pc[0], .45)}</div>${rv(`<p class="p">${esc(pc[2](D.persona_value))}</p>`, 1.1)}` });
+S.push({ th: 'pink', html: `${rv(`<div class="k">${esc(T.youare)}</div>`, 0)}<div class="pop" style="--d:.2s">${icon(D.persona)}</div>
+  <div class="h" style="font-size:12cqw">${chars(pc[0], .45)}</div>${rv(`<p class="p">${esc(pc[1](D.persona_value))}</p>`, 1.1)}` });
 
 if (D.night && D.night.message) S.push({ th: 'ink', html: `${rv(`<div class="k">${esc(T.latest)}</div>`, 0)}
   <div class="huge">${chars(D.night.time, .15)}</div>${rv(`<p class="q">${esc(D.night.message)}</p>`, .7)}${rv(`<div class="meta">${esc(T.at(fd(D.night.date), D.night.repo))}</div>`, .9)}` });
@@ -309,6 +330,7 @@ if (D.biggest && D.biggest.lines) S.push({ th: 'orange', html: `${rv(`<div class
   ${rv(`<div class="h">${esc(T.blines)}</div>`, .3)}${D.biggest.message ? rv(`<p class="q">${esc(D.biggest.message)}</p>`, .6) : ''}${rv(`<div class="meta">${esc(T.at(fd(D.biggest.date), D.biggest.repo))}</div>`, .8)}` });
 
 const topLang = D.langs[0] ? D.langs[0].name : '—';
+const CAN_SHARE = (() => { try { return !!(navigator.canShare && navigator.canShare({ files: [new File(['x'], 'x.png', { type: 'image/png' })] })); } catch (e) { return false; } })();
 const delta = (now, before) => { if (!before) return null; const p = Math.round((now - before) * 100 / before); return { p, txt: (p > 0 ? '+' : p < 0 ? '−' : '±') + Math.abs(p) + '%' }; };
 const P = D.prev;
 if (P && P.commits >= 10) {
@@ -321,8 +343,10 @@ if (P && P.commits >= 10) {
 S.push({ th: 'ink', last: true, cls: 'summary', html: `${rv(`<div class="h">${esc(T.summary(D.year))}</div>`, 0)}
   <div class="grid">${[[nf(tot.commits), T.s_commits], [nf(tot.repos), T.s_repos], [nf(tot.active_days), T.s_days], [nf(D.streak.length), T.s_streak], [nf(tot.added), T.s_added], [topLang, T.s_lang]]
     .map(([v, k], i) => `<div class="pop" style="--d:${.15 + i * .07}s"><b style="--fs:${34 / (String(v).length * .6)}cqw">${esc(v)}</b><span>${esc(k)}</span></div>`).join('')}</div>
-  ${rv(`<p class="p"><b>${esc(pc[1])} ${esc(pc[0])}</b></p>`, .7)}<div class="sp"></div>
-  ${rv(`<div class="acts"><button class="btn" id="dl">${esc(T.download)}</button><button class="btn g" id="again">${esc(T.again)}</button></div>`, .9)}
+  ${rv(`<p class="p"><b>${icon(D.persona, 'sm')}${esc(pc[0])}</b></p>`, .7)}<div class="sp"></div>
+  ${rv(`<div class="acts">${CAN_SHARE ? `<button class="btn" id="sh">${esc(T.share)}</button><button class="btn g" id="dl">${esc(T.download)}</button>`
+      : `<button class="btn" id="dl">${esc(T.download)}</button><button class="btn g" id="again">${esc(T.again)}</button>`}</div>`, .9)}
+  ${CAN_SHARE ? '' : rv(`<p class="hint">${esc(T.shareHint)}</p>`, 1)}
   ${rv(`<div class="meta" style="font-size:2.8cqw">${esc(T.made)}</div>`, 1.1)}` });
 
 /* ---------- motor dos stories ---------- */
@@ -350,6 +374,7 @@ function go(i) {
   segs.forEach((g, k) => { g.classList.toggle('done', k < i); g.firstChild.style.transform = k < i ? 'scaleX(1)' : 'scaleX(0)'; });
   $('#tap').style.display = S[i].last ? 'none' : '';
   cur = i; elapsed = 0; t0 = performance.now(); countUps(s);
+  if (S[i].last) setTimeout(() => makeCard().catch(() => {}), 1200);
 }
 function loop(now) {
   if (!paused && !held && !S[cur].last && !document.hidden) {
@@ -376,13 +401,15 @@ addEventListener('keydown', e => {
 let sx = 0;
 $('#stage').addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
 $('#stage').addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 60) go(cur + (dx < 0 ? 1 : -1)); }, { passive: true });
-$('#again').addEventListener('click', () => { cur = -1; go(0); });
-$('#dl').addEventListener('click', downloadCard);
+$('#again') && $('#again').addEventListener('click', () => { cur = -1; go(0); });
+$('#dl').addEventListener('click', () => saveCard());
+$('#sh') && $('#sh').addEventListener('click', () => shareCard());
 go(0); raf = requestAnimationFrame(loop);
 
 /* ---------- cartão para compartilhar (1080×1920) ---------- */
-async function downloadCard() {
-  const btn = $('#dl'); btn.disabled = true;
+let cardFile = null;
+async function makeCard() {
+  if (cardFile) return cardFile;
   try { await Promise.all(['800 100px Retro', '500 40px Retro', '600 30px RetroMono'].map(f => document.fonts.load(f))); } catch (e) {}
   const W = 1080, H = 1920, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   const c = cv.getContext('2d'), css = getComputedStyle(document.documentElement);
@@ -462,18 +489,27 @@ async function downloadCard() {
   const ph = Math.max(170, H - 150 - y);
   c.fillStyle = pink; c.beginPath(); c.roundRect(X, y, CW, ph, 40); c.fill();
   c.fillStyle = ink; c.globalAlpha = .7; font(600, 24, MONO); track('', 3); c.fillText(T.youare.toUpperCase(), X + 48, y + 66); track('', 0); c.globalAlpha = 1;
-  font(800, 96, SANS); c.fillText(pc[1], X + 44, y + ph / 2 + 58);
+  const svg = icon(D.persona).replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" ').replaceAll('currentColor', ink);
+  const img = new Image(); img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+  try { await img.decode(); c.drawImage(img, X + 48, y + ph / 2 - 52, 112, 112); } catch (e) {}
   fit(pc[0], 800, 76, CW - 240); c.fillText(pc[0], X + 196, y + ph / 2 + 50);
 
   // rodapé
   c.fillStyle = paper; c.globalAlpha = .45; font(600, 24, MONO); c.fillText('github.com/Ryuks-py/git-retro', X, H - 70); c.globalAlpha = 1;
 
-  cv.toBlob(b => {
-    btn.disabled = false;
-    const f = new File([b], `git-retro-${D.year}.png`, { type: 'image/png' });
-    if (navigator.canShare && navigator.canShare({ files: [f] }) && matchMedia('(pointer:coarse)').matches) { navigator.share({ files: [f] }).catch(() => {}); return; }
-    const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = f.name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-  }, 'image/png');
+  const b = await new Promise(r => cv.toBlob(r, 'image/png'));
+  return (cardFile = new File([b], `git-retro-${D.year}.png`, { type: 'image/png' }));
+}
+async function saveCard() {
+  const f = await makeCard(), a = document.createElement('a');
+  a.href = URL.createObjectURL(f); a.download = f.name; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+async function shareCard() {
+  const f = await makeCard();
+  // no celular abre a folha de compartilhar do sistema: Instagram (stories, feed, direct), WhatsApp, LinkedIn…
+  try { await navigator.share({ files: [f], text: T.shareText(D.year) }); }
+  catch (e) { if (e && e.name !== 'AbortError') saveCard(); }
 }
 </script>
 </body>

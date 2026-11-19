@@ -42,7 +42,7 @@ Python 3.9+ and `git`. No other dependencies.
 | Words of the year | the words you used most in commit messages, and how many commits were fixes |
 | Biggest commit | the largest change you made in one go |
 | Compared to last year | commits, active days, streak and lines vs. the year before, and whether your top language changed |
-| Summary | everything on one card, with a **Download image** button (1080×1920, ready for stories) |
+| Summary | everything on one card (1080×1920, story size). On your phone, **Share to Instagram** opens the system share sheet with Instagram Stories, Feed, WhatsApp, LinkedIn…; on a computer, **Download image** |
 
 ![The share card](docs/card.png)
 
@@ -50,19 +50,19 @@ Python 3.9+ and `git`. No other dependencies.
 
 Each one is a measured trait. The page picks the one where you stand out the most; *Office hours* only shows up when nothing else does.
 
-| | Persona | When |
-|---|---|---|
-| 🦉 | Night owl | 12%+ of commits between midnight and 5am |
-| ⚔️ | Weekend warrior | 30%+ on Saturday or Sunday |
-| 🏃 | Marathoner | a streak of 21+ days |
-| 🧹 | Code janitor | deleted 60%+ of what you wrote |
-| 🧯 | Firefighter | 35%+ of commits are fixes |
-| 🌍 | Polyglot | 4+ languages with at least 5% each |
-| ⚡ | Turbo mode | 30%+ of commits on your busiest 10% of days |
-| 💍 | Loyal to one | 80%+ of commits in one repository |
-| ☀️ | Early bird | 25%+ before 9am |
-| 🌙 | Night shift | 35%+ after 6pm |
-| 💼 | Office hours | none of the above |
+| Persona | When |
+|---|---|
+| Night owl | 12%+ of commits between midnight and 5am |
+| Weekend warrior | 30%+ on Saturday or Sunday |
+| Marathoner | a streak of 21+ days |
+| Code janitor | deleted 60%+ of what you wrote |
+| Firefighter | 35%+ of commits are fixes |
+| Polyglot | 4+ languages with at least 5% each |
+| Turbo mode | 30%+ of commits on your busiest 10% of days |
+| Loyal to one | 80%+ of commits in one repository |
+| Early bird | 25%+ before 9am |
+| Night shift | 35%+ after 6pm |
+| Office hours | none of the above |
 
 Navigate with **← →**, tap the sides, or swipe. Space pauses; press and hold also pauses.
 
