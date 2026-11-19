@@ -1,0 +1,31 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "git-retro"
+version = "0.1.0"
+description = "Your year in git as an animated, shareable story page. Runs 100% locally, zero dependencies."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "David Montanha" }]
+keywords = ["git", "wrapped", "year in review", "statistics", "cli", "developer-tools"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Environment :: Console",
+  "Topic :: Software Development :: Version Control :: Git",
+]
+
+[project.urls]
+Homepage = "https://github.com/Ryuks-py/git-retro"
+
+[project.scripts]
+git-retro = "git_retro.cli:main"
+
+[tool.setuptools]
+packages = ["git_retro"]
+
+[tool.setuptools.package-data]
+git_retro = ["template.html"]

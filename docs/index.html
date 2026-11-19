@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0E0E11">
+<title>git retro</title>
+<style>
+/* Formato: stories (9:16) com um slide por estatística, cada um com a sua cor.
+   Sem fontes nem scripts externos: a página abre offline e não chama ninguém. */
+:root{
+  --ink:#0E0E11;--paper:#F4F0E6;--lime:#C6FF3D;--violet:#6C4CF5;--orange:#FF5A1F;--blue:#1E3BFF;--pink:#FF8AD0;
+  --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--ink);color:var(--paper);font-family:var(--sans);overflow:hidden;-webkit-tap-highlight-color:transparent}
+body{display:grid;place-items:center;user-select:none;-webkit-user-select:none}
+.stage{position:relative;width:min(100vw,calc(100dvh * 9 / 16));height:min(100dvh,calc(100vw * 16 / 9));overflow:hidden;
+  container-type:size;background:var(--ink)}
+@media (min-width:700px){.stage{height:min(92dvh,900px);width:calc(min(92dvh,900px) * 9 / 16);border-radius:22px;box-shadow:0 30px 120px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06)}}
+.help{position:fixed;bottom:18px;left:50%;translate:-50% 0;font:500 12px/1 var(--mono);color:rgba(244,240,230,.4);letter-spacing:.04em}
+@media (max-width:699px){.help{display:none}}
+
+.bars{position:absolute;top:10px;left:10px;right:10px;display:flex;gap:4px;z-index:20}
+.bars i{flex:1;height:3px;border-radius:2px;background:color-mix(in srgb,var(--fg) 25%,transparent);overflow:hidden}
+.bars i b{display:block;height:100%;width:100%;background:var(--fg);transform:scaleX(0);transform-origin:left}
+.bars i.done b{transform:scaleX(1)}
+.top{position:absolute;top:24px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;z-index:20;
+  font:600 3.1cqw/1 var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--fg)}
+.top button{all:unset;cursor:pointer;padding:6px 8px;margin:-6px -8px;font:inherit}
+
+.slide{position:absolute;inset:0;padding:19cqw 7cqw 10cqw;display:flex;flex-direction:column;justify-content:center;gap:3cqw;
+  background:var(--bg);color:var(--fg);opacity:0;visibility:hidden;transition:opacity .35s,visibility 0s .35s}
+.slide.on{opacity:1;visibility:visible;transition:opacity .35s}
+.th-ink{--bg:var(--ink);--fg:var(--paper);--ac:var(--lime)}
+.th-lime{--bg:var(--lime);--fg:var(--ink);--ac:var(--ink)}
+.th-violet{--bg:var(--violet);--fg:#fff;--ac:var(--lime)}
+.th-orange{--bg:var(--orange);--fg:#fff;--ac:var(--ink)}
+.th-blue{--bg:var(--blue);--fg:#fff;--ac:var(--lime)}
+.th-pink{--bg:var(--pink);--fg:var(--ink);--ac:var(--ink)}
+.th-paper{--bg:var(--paper);--fg:var(--ink);--ac:var(--orange)}
+.stage{--fg:var(--paper)}
+
+.k{font:600 3.3cqw/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;opacity:.75}
+.h{font-weight:900;font-size:9.5cqw;line-height:.95;letter-spacing:-.04em}
+.huge{font-weight:900;font-size:27cqw;line-height:.82;letter-spacing:-.06em;color:var(--ac);font-variant-numeric:tabular-nums}
+.big{font-weight:900;font-size:16cqw;line-height:.86;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.p{font-size:4.6cqw;line-height:1.35;font-weight:500;max-width:34ch}
+.p b{font-weight:800}
+.q{font-weight:800;font-size:6.4cqw;line-height:1.12;letter-spacing:-.02em}
+.q::before{content:"“"}.q::after{content:"”"}
+.meta{font:500 3.4cqw/1.3 var(--mono);opacity:.7}
+.sp{flex:1}
+
+/* entrada: cada .rv sobe quando o slide liga */
+.rv{opacity:0;translate:0 7cqw}
+.on .rv{animation:rv .9s var(--ease) both;animation-delay:var(--d,0s)}
+@keyframes rv{from{opacity:0;translate:0 7cqw}to{opacity:1;translate:0 0}}
+.chars .cw{display:inline-block;white-space:nowrap}
+.chars i{display:inline-block;font-style:normal;opacity:0;translate:0 60%;rotate:8deg}
+.on .chars i{animation:ch .8s var(--ease) both;animation-delay:calc(var(--d,0s) + var(--i) * 60ms)}
+@keyframes ch{to{opacity:1;translate:0 0;rotate:0deg}}
+.pop{transform:scale(.4);opacity:0}
+.on .pop{animation:pop .7s cubic-bezier(.34,1.56,.64,1) both;animation-delay:var(--d,0s)}
+@keyframes pop{to{transform:scale(1);opacity:1}}
+
+/* gráficos */
+.cal{width:100%;height:auto;display:block}
+.cal rect{opacity:0}
+.on .cal rect{animation:cell .5s var(--ease) both;animation-delay:calc(.3s + var(--w) * 18ms)}
+@keyframes cell{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}
+.cal rect{transform-box:fill-box;transform-origin:center}
+.cal text{font:600 9px var(--mono);fill:currentColor;opacity:.6}
+.clock{width:84%;align-self:center;height:auto;overflow:visible}
+.clock line.b{stroke-dasharray:1;stroke-dashoffset:1}
+.on .clock line.b{transition:stroke-dashoffset 1s var(--ease);transition-delay:calc(.3s + var(--i) * 35ms);stroke-dashoffset:0}
+.clock text{font:700 11px var(--mono);fill:currentColor;text-anchor:middle;dominant-baseline:middle;opacity:.7}
+.hb{display:grid;gap:2.6cqw}
+.hb .r{display:grid;grid-template-columns:1fr auto;gap:1cqw 3cqw;align-items:end}
+.hb .n{font-weight:800;font-size:5cqw;letter-spacing:-.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb .v{font:600 3.6cqw var(--mono);opacity:.8}
+.hb .t{grid-column:1/-1;height:2.6cqw;border-radius:2cqw;background:color-mix(in srgb,var(--fg) 14%,transparent);overflow:hidden}
+.hb .t i{display:block;height:100%;border-radius:inherit;background:var(--c,var(--ac));width:var(--w);transform:scaleX(0);transform-origin:left}
+.on .hb .t i{transition:transform 1.2s var(--ease);transition-delay:var(--d,0s);transform:scaleX(1)}
+.words{display:flex;flex-wrap:wrap;gap:1.6cqw 3cqw;align-items:baseline}
+.words span{font-weight:900;letter-spacing:-.03em;line-height:1}
+.pm{display:flex;gap:4cqw;align-items:baseline;flex-wrap:wrap}
+.pm .big:last-child{opacity:.55}
+.weeks{display:flex;gap:1.4cqw;align-items:flex-end;height:22cqw}
+.weeks div{flex:1;display:flex;flex-direction:column;align-items:center;gap:1.4cqw;height:100%;justify-content:flex-end}
+.weeks i{display:block;width:100%;border-radius:1.4cqw;background:var(--ac);height:var(--h);transform:scaleY(0);transform-origin:bottom}
+.on .weeks i{transition:transform 1s var(--ease);transition-delay:calc(.3s + var(--i) * 60ms);transform:scaleY(1)}
+.weeks span{font:600 2.8cqw var(--mono);opacity:.7}
+.emoji{font-size:30cqw;line-height:1}
+
+.summary{gap:2.4cqw;padding-top:17cqw}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:2.4cqw}
+.grid div{border:1px solid color-mix(in srgb,var(--fg) 18%,transparent);border-radius:3cqw;padding:3.2cqw}
+.grid b{display:block;font-weight:900;font-size:min(8.4cqw,var(--fs,8.4cqw));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.04em;color:var(--ac);line-height:1}
+.grid span{font:600 2.9cqw/1.2 var(--mono);text-transform:uppercase;letter-spacing:.06em;opacity:.7}
+.acts{display:flex;gap:2.4cqw;position:relative;z-index:30}
+.btn{all:unset;cursor:pointer;flex:1;text-align:center;padding:3.6cqw;border-radius:99px;font-weight:800;font-size:4cqw;background:var(--ac);color:var(--bg)}
+.btn.g{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--fg) 35%,transparent)}
+.btn:focus-visible{outline:2px solid var(--fg);outline-offset:3px}
+.tap{position:absolute;inset:0;z-index:10;display:grid;grid-template-columns:30% 70%}
+.tap i{cursor:pointer}
+.foot{position:absolute;bottom:4cqw;left:7cqw;right:7cqw;font:500 2.8cqw var(--mono);opacity:.5;z-index:20;color:var(--fg)}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01s!important;animation-delay:0s!important;transition-duration:.01s!important;transition-delay:0s!important}}
+</style>
+</head>
+<body>
+<div class="stage" id="stage">
+  <div class="bars" id="bars" aria-hidden="true"></div>
+  <div class="top"><span>git retro <span id="yr"></span></span><button id="pause" aria-label="pausar">❚❚</button></div>
+  <div id="slides"></div>
+  <div class="tap" id="tap" aria-hidden="true"><i data-dir="-1"></i><i data-dir="1"></i></div>
+</div>
+<p class="help" id="help"></p>
+<script>
+const D = {"year": 2026, "name": "You", "totals": {"commits": 636, "repos": 6, "active_days": 250, "added": 89296, "removed": 37075, "files": 23}, "days": {"2026-01-01": 1, "2026-01-02": 1, "2026-01-04": 1, "2026-01-05": 2, "2026-01-07": 2, "2026-01-08": 4, "2026-01-09": 1, "2026-01-10": 1, "2026-01-11": 1, "2026-01-13": 1, "2026-01-14": 1, "2026-01-15": 4, "2026-01-16": 1, "2026-01-18": 2, "2026-01-20": 2, "2026-01-21": 6, "2026-01-24": 2, "2026-01-26": 4, "2026-01-27": 1, "2026-01-28": 6, "2026-01-29": 6, "2026-01-30": 3, "2026-01-31": 6, "2026-02-01": 2, "2026-02-02": 1, "2026-02-03": 1, "2026-02-06": 4, "2026-02-08": 1, "2026-02-09": 3, "2026-02-11": 4, "2026-02-12": 4, "2026-02-13": 2, "2026-02-14": 1, "2026-02-16": 1, "2026-02-17": 4, "2026-02-18": 1, "2026-02-19": 1, "2026-02-20": 6, "2026-02-22": 4, "2026-02-23": 2, "2026-02-24": 2, "2026-02-26": 1, "2026-02-27": 2, "2026-02-28": 1, "2026-03-02": 1, "2026-03-03": 3, "2026-03-04": 2, "2026-03-05": 2, "2026-03-06": 4, "2026-03-09": 2, "2026-03-10": 3, "2026-03-11": 1, "2026-03-12": 1, "2026-03-13": 1, "2026-03-16": 1, "2026-03-17": 1, "2026-03-20": 1, "2026-03-21": 2, "2026-03-23": 6, "2026-03-24": 2, "2026-03-25": 4, "2026-03-26": 2, "2026-03-27": 6, "2026-03-30": 1, "2026-03-31": 2, "2026-04-03": 1, "2026-04-04": 1, "2026-04-05": 4, "2026-04-06": 1, "2026-04-07": 4, "2026-04-08": 4, "2026-04-09": 2, "2026-04-10": 2, "2026-04-11": 3, "2026-04-12": 4, "2026-04-13": 6, "2026-04-14": 2, "2026-04-15": 6, "2026-04-16": 1, "2026-04-17": 1, "2026-04-19": 6, "2026-04-20": 4, "2026-04-21": 1, "2026-04-22": 2, "2026-04-23": 2, "2026-04-24": 6, "2026-04-26": 3, "2026-04-27": 2, "2026-04-28": 1, "2026-04-29": 4, "2026-04-30": 2, "2026-05-01": 2, "2026-05-05": 3, "2026-05-06": 1, "2026-05-07": 1, "2026-05-08": 1, "2026-05-10": 2, "2026-05-11": 3, "2026-05-12": 1, "2026-05-13": 2, "2026-05-14": 2, "2026-05-15": 1, "2026-05-16": 2, "2026-05-18": 4, "2026-05-19": 1, "2026-05-20": 6, "2026-05-21": 2, "2026-05-24": 2, "2026-05-25": 4, "2026-05-27": 2, "2026-05-28": 3, "2026-05-31": 2, "2026-06-01": 3, "2026-06-02": 1, "2026-06-03": 2, "2026-06-04": 3, "2026-06-08": 6, "2026-06-11": 2, "2026-06-12": 6, "2026-06-13": 2, "2026-06-16": 3, "2026-06-17": 3, "2026-06-19": 1, "2026-06-23": 1, "2026-06-24": 2, "2026-06-26": 1, "2026-06-27": 2, "2026-06-29": 2, "2026-07-01": 1, "2026-07-02": 1, "2026-07-03": 4, "2026-07-05": 4, "2026-07-06": 2, "2026-07-07": 3, "2026-07-09": 3, "2026-07-10": 4, "2026-07-13": 2, "2026-07-14": 1, "2026-07-15": 4, "2026-07-17": 1, "2026-07-18": 1, "2026-07-19": 6, "2026-07-22": 1, "2026-07-23": 2, "2026-07-27": 4, "2026-07-29": 2, "2026-07-30": 1, "2026-07-31": 4, "2026-08-03": 2, "2026-08-04": 2, "2026-08-06": 1, "2026-08-07": 3, "2026-08-10": 2, "2026-08-11": 1, "2026-08-12": 2, "2026-08-13": 6, "2026-08-14": 1, "2026-08-17": 2, "2026-08-18": 6, "2026-08-21": 1, "2026-08-22": 6, "2026-08-23": 1, "2026-08-24": 3, "2026-08-25": 2, "2026-08-26": 1, "2026-08-27": 6, "2026-08-30": 6, "2026-08-31": 3, "2026-09-01": 4, "2026-09-02": 1, "2026-09-03": 1, "2026-09-07": 2, "2026-09-08": 6, "2026-09-10": 4, "2026-09-12": 2, "2026-09-13": 2, "2026-09-14": 4, "2026-09-16": 1, "2026-09-18": 3, "2026-09-20": 2, "2026-09-21": 2, "2026-09-22": 1, "2026-09-23": 6, "2026-09-24": 3, "2026-09-25": 4, "2026-09-27": 6, "2026-09-28": 1, "2026-09-29": 1, "2026-09-30": 6, "2026-10-01": 6, "2026-10-02": 6, "2026-10-04": 2, "2026-10-06": 2, "2026-10-07": 1, "2026-10-08": 2, "2026-10-09": 4, "2026-10-12": 2, "2026-10-13": 6, "2026-10-14": 4, "2026-10-16": 4, "2026-10-17": 2, "2026-10-19": 3, "2026-10-20": 1, "2026-10-21": 3, "2026-10-23": 1, "2026-10-25": 2, "2026-10-27": 3, "2026-10-28": 1, "2026-10-29": 2, "2026-10-30": 1, "2026-11-01": 1, "2026-11-02": 1, "2026-11-03": 1, "2026-11-04": 2, "2026-11-05": 4, "2026-11-06": 2, "2026-11-09": 2, "2026-11-10": 2, "2026-11-11": 2, "2026-11-12": 1, "2026-11-16": 2, "2026-11-17": 2, "2026-11-18": 2, "2026-11-19": 1, "2026-11-21": 3, "2026-11-23": 1, "2026-11-24": 6, "2026-11-25": 2, "2026-11-26": 3, "2026-11-27": 1, "2026-11-29": 4, "2026-11-30": 4, "2026-12-01": 4, "2026-12-02": 1, "2026-12-04": 1, "2026-12-05": 2, "2026-12-07": 1, "2026-12-11": 1, "2026-12-14": 2, "2026-12-15": 1, "2026-12-16": 3, "2026-12-17": 2, "2026-12-18": 2, "2026-12-21": 3, "2026-12-22": 6, "2026-12-26": 6, "2026-12-28": 4, "2026-12-29": 1, "2026-12-30": 1, "2026-12-31": 1}, "hours": [20, 14, 4, 2, 2, 0, 0, 11, 21, 35, 68, 48, 27, 39, 52, 57, 39, 42, 16, 24, 30, 25, 31, 29], "weekdays": [113, 102, 108, 96, 102, 45, 70], "months": [59, 48, 48, 75, 47, 40, 51, 57, 62, 58, 49, 42], "langs": [{"name": "Python", "lines": 36012, "pct": 28.5, "color": "#3B82F6"}, {"name": "Dart", "lines": 20284, "pct": 16.1, "color": "#00B4AB"}, {"name": "TypeScript", "lines": 17782, "pct": 14.1, "color": "#3178C6"}, {"name": "SQL", "lines": 8996, "pct": 7.1, "color": "#E38C00"}, {"name": "Kotlin", "lines": 8354, "pct": 6.6, "color": "#A97BFF"}, {"name": "CSS", "lines": 7875, "pct": 6.2, "color": "#A855F7"}], "repos": [{"name": "api-pagamentos", "commits": 219, "added": 32114, "removed": 12894}, {"name": "app-entregas", "commits": 151, "added": 19992, "removed": 8646}, {"name": "painel-admin", "commits": 113, "added": 15437, "removed": 6834}, {"name": "cli-deploy", "commits": 60, "added": 8521, "removed": 3147}, {"name": "site-institucional", "commits": 59, "added": 8016, "removed": 3463}, {"name": "dotfiles", "commits": 34, "added": 5216, "removed": 2091}], "streak": {"length": 15, "start": "2026-04-03", "end": "2026-04-17"}, "busiest": {"date": "2026-12-26", "commits": 6}, "night": {"time": "04:52", "date": "2026-09-12", "message": "hotfix: prod is down, don't ask", "repo": "api-pagamentos"}, "biggest": {"lines": 492, "message": "feat: dark mode", "repo": "site-institucional", "date": "2026-04-12"}, "first": {"date": "2026-01-01", "message": "fix broken migration", "repo": "api-pagamentos"}, "last": {"date": "2026-12-31", "message": "fix shipping cost rounding", "repo": "app-entregas"}, "words": [["orders", 102], ["auto", 41], ["deploy", 41], ["main", 41], ["save", 39], ["button", 39], ["created", 39], ["duplicate", 39]], "ignored": {"lines": 0, "top": ""}, "fix_pct": 29, "persona": "office", "weekend_pct": 18, "lang": "en"};
+const L = D.lang === 'pt' ? 'pt' : 'en';
+const T = {
+  pt: {
+    help: '← → para navegar · espaço pausa · toque segurando também pausa',
+    hi: n => `Oi${n ? ', ' + n : ''}.`, intro: 'Seu ano no git chegou. Bora ver o que você aprontou?', tapgo: 'toque para começar →',
+    youmade: 'Neste ano você fez', commits: 'commits', across: (r, d) => `em <b>${r} ${r === 1 ? 'repositório' : 'repositórios'}</b>, em <b>${d} dias</b> diferentes.`,
+    perday: n => `Uma média de <b>${n}</b> por dia em que você abriu o editor.`,
+    lines: 'Linhas', written: 'escritas', erased: 'apagadas', delgood: 'Apagar também é programar. Código bom é código que não existe.',
+    netgood: n => `Saldo de <b>${n}</b> linhas no mundo. Elas que lutem.`,
+    yearbyday: 'Seu ano, dia a dia', busiest: (d, n) => `Seu dia mais intenso foi <b>${d}</b>, com <b>${n} commits</b>.`,
+    days: 'dias seguidos', streak: (a, b) => `De ${a} a ${b} sem quebrar a corrente.`, streak1: 'Commit é tipo academia: o importante é voltar.',
+    clock: 'Seu relógio', peak: h => `Seu horário de pico é às <b>${h}h</b>.`,
+    youare: 'Você é', personas: {
+      owl: ['Coruja da madrugada', '🦉', p => `${p}% dos seus commits saíram entre meia-noite e 5h. O deploy de produção agradece (ou não).`],
+      weekend: ['Guerreiro do fim de semana', '⚔️', p => `${p}% dos commits caíram no sábado ou no domingo. Descanso é um conceito.`],
+      early: ['Madrugador', '☀️', () => 'Você commita antes do café esfriar.'],
+      night: ['Turno da noite', '🌙', () => 'Seu código acorda quando o sol se põe.'],
+      office: ['Expediente comercial', '💼', () => 'Das 9 às 18, constante como um cron job.'],
+    },
+    latest: 'O commit mais tarde', at: (d, r) => `${d} · ${r}`,
+    langs: 'Suas linguagens', lines_: 'linhas', repos: 'Onde você mais mexeu',
+    words: 'Palavras do ano', fixes: p => `<b>${p}%</b> dos seus commits foram correções. Ninguém escapa.`,
+    confess: 'Confissão', confessL: 'linhas que você não escreveu', confessP: t => `Mas commitou. A gente tirou da conta, tipo <b>${t}</b>. Seu segredo está seguro.`,
+    biggest: 'O maior commit', blines: 'linhas de uma vez',
+    weekdays: 'Seu dia da semana', wd: ['seg', 'ter', 'qua', 'qui', 'sex', 'sáb', 'dom'], bestwd: d => `<b>${d}</b> é o seu dia.`, wdFull: ['segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado', 'domingo'],
+    firstlast: 'Do primeiro ao último', first: 'Primeiro', last: 'Último',
+    summary: y => `Meu ${y} no git`, s_commits: 'commits', s_repos: 'repositórios', s_days: 'dias ativos', s_streak: 'dias seguidos',
+    s_added: 'linhas escritas', s_lang: 'linguagem do ano', download: 'Baixar imagem', again: 'Ver de novo', made: 'gerado localmente com git-retro · nada saiu do seu computador',
+    cardTitle: y => `MEU ${y} NO GIT`, cardFoot: 'git-retro',
+  },
+  en: {
+    help: '← → to navigate · space pauses · press and hold also pauses',
+    hi: n => `Hey${n ? ' ' + n : ''}.`, intro: 'Your year in git is here. Ready to see what you shipped?', tapgo: 'tap to start →',
+    youmade: 'This year you made', commits: 'commits', across: (r, d) => `across <b>${r} ${r === 1 ? 'repository' : 'repositories'}</b>, on <b>${d} different days</b>.`,
+    perday: n => `That’s <b>${n}</b> per day you opened your editor.`,
+    lines: 'Lines', written: 'written', erased: 'deleted', delgood: 'Deleting is programming too. The best code is no code.',
+    netgood: n => `A net <b>${n}</b> lines added to the world. Good luck to them.`,
+    yearbyday: 'Your year, day by day', busiest: (d, n) => `Your busiest day was <b>${d}</b>, with <b>${n} commits</b>.`,
+    days: 'days in a row', streak: (a, b) => `From ${a} to ${b} without breaking the chain.`, streak1: 'Commits are like the gym: what matters is coming back.',
+    clock: 'Your clock', peak: h => `Your peak hour is <b>${h}:00</b>.`,
+    youare: 'You are', personas: {
+      owl: ['Night owl', '🦉', p => `${p}% of your commits landed between midnight and 5am. Production says thanks (or not).`],
+      weekend: ['Weekend warrior', '⚔️', p => `${p}% of your commits happened on Saturday or Sunday. Rest is a concept.`],
+      early: ['Early bird', '☀️', () => 'You commit before the coffee gets cold.'],
+      night: ['Night shift', '🌙', () => 'Your code wakes up when the sun goes down.'],
+      office: ['Office hours', '💼', () => 'Nine to six, steady as a cron job.'],
+    },
+    latest: 'Your latest commit', at: (d, r) => `${d} · ${r}`,
+    langs: 'Your languages', lines_: 'lines', repos: 'Where you spent your time',
+    words: 'Words of the year', fixes: p => `<b>${p}%</b> of your commits were fixes. Nobody escapes.`,
+    confess: 'Confession', confessL: 'lines you didn’t write', confessP: t => `But you committed them. We left them out, like <b>${t}</b>. Your secret is safe.`,
+    biggest: 'Your biggest commit', blines: 'lines in one go',
+    weekdays: 'Your weekday', wd: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'], bestwd: d => `<b>${d}</b> is your day.`, wdFull: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    firstlast: 'First to last', first: 'First', last: 'Last',
+    summary: y => `My ${y} in git`, s_commits: 'commits', s_repos: 'repositories', s_days: 'active days', s_streak: 'day streak',
+    s_added: 'lines written', s_lang: 'language of the year', download: 'Download image', again: 'Watch again', made: 'generated locally with git-retro · nothing left your computer',
+    cardTitle: y => `MY ${y} IN GIT`, cardFoot: 'git-retro',
+  },
+}[L];
+document.documentElement.lang = L === 'pt' ? 'pt-BR' : 'en';
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const nf = n => Math.round(n).toLocaleString(L === 'pt' ? 'pt-BR' : 'en-US');
+const pd = s => { const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d); };
+const fd = s => pd(s).toLocaleDateString(L === 'pt' ? 'pt-BR' : 'en-US', { day: 'numeric', month: 'long' });
+const chars = (t, d = 0) => { let i = 0; return `<span class="chars" style="--d:${d}s">${String(t).split(' ').map(w => `<span class="cw">${[...w].map(c => `<i style="--i:${i++}">${esc(c)}</i>`).join('')}</span>`).join(' ')}</span>`; };
+const rv = (html, d, cls = '') => `<div class="rv ${cls}" style="--d:${d}s">${html}</div>`;
+const fitN = (n, base, k = .62) => { const len = nf(n).length; return `font-size:${Math.min(base, 86 / (len * k))}cqw`; };
+const cnt = (n, cls = 'huge') => `<div class="${cls}" style="${fitN(n, cls === 'huge' ? 27 : 16)}" data-count="${n}">0</div>`;
+const tot = D.totals;
+
+/* ---------- gráficos ---------- */
+function calendar() {
+  const y = D.year, start = new Date(y, 0, 1), max = Math.max(1, ...Object.values(D.days));
+  const off = (start.getDay() + 6) % 7; // semana começa na segunda
+  const half = 27, cs = 11, g = 2, top = 14;
+  let out = '', w = 0;
+  for (let d = new Date(start); d.getFullYear() === y; d.setDate(d.getDate() + 1)) {
+    const doy = Math.round((d - start) / 864e5), wk = Math.floor((doy + off) / 7), row = (d.getDay() + 6) % 7;
+    const part = wk < half ? 0 : 1, col = wk - part * half;
+    const iso = `${y}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const n = D.days[iso] || 0, lv = n ? Math.ceil(Math.min(1, n / (max * .6)) * 4) : 0;
+    const op = [0.09, .35, .55, .78, 1][lv];
+    out += `<rect x="${col * (cs + g)}" y="${top + part * (7 * (cs + g) + top + 6) + row * (cs + g)}" width="${cs}" height="${cs}" rx="2.5" fill="${lv ? 'var(--ac)' : 'currentColor'}" fill-opacity="${op}" style="--w:${wk}"><title>${iso}: ${n}</title></rect>`;
+    w = Math.max(w, col);
+  }
+  const mn = i => new Date(y, i, 1).toLocaleDateString(L === 'pt' ? 'pt-BR' : 'en-US', { month: 'short' }).replace('.', '');
+  const H = 2 * (7 * (cs + g) + top) + 6;
+  return `<svg class="cal" viewBox="0 0 ${(w + 1) * (cs + g)} ${H}" role="img" aria-label="${esc(T.yearbyday)}">
+    <text x="0" y="9">${mn(0)} – ${mn(5)}</text><text x="0" y="${7 * (cs + g) + top + 6 + 9}">${mn(6)} – ${mn(11)}</text>${out}</svg>`;
+}
+function clock() {
+  const max = Math.max(1, ...D.hours), R0 = 46, R1 = 128;
+  let s = '';
+  D.hours.forEach((n, h) => {
+    const a = (h / 24) * Math.PI * 2 - Math.PI / 2, r = R0 + (R1 - R0) * (n / max), c = Math.cos(a), si = Math.sin(a);
+    s += `<line x1="${150 + c * R0}" y1="${150 + si * R0}" x2="${150 + c * R1}" y2="${150 + si * R1}" stroke="currentColor" stroke-opacity=".12" stroke-width="7" stroke-linecap="round"/>`;
+    if (n) s += `<line class="b" pathLength="1" style="--i:${h}" x1="${150 + c * R0}" y1="${150 + si * R0}" x2="${150 + c * r}" y2="${150 + si * r}" stroke="var(--ac)" stroke-width="7" stroke-linecap="round"/>`;
+  });
+  [0, 6, 12, 18].forEach(h => { const a = (h / 24) * Math.PI * 2 - Math.PI / 2; s += `<text x="${150 + Math.cos(a) * 146}" y="${150 + Math.sin(a) * 146}">${h}h</text>`; });
+  return `<svg class="clock" viewBox="0 0 300 300" role="img" aria-label="${esc(T.clock)}">${s}</svg>`;
+}
+const hbars = (rows, val, label, color) => {
+  const max = Math.max(1, ...rows.map(val));
+  return `<div class="hb">${rows.map((r, i) => `<div class="r rv" style="--d:${.25 + i * .1}s"><span class="n">${esc(label(r))}</span><span class="v">${nf(val(r))}</span>
+    <span class="t"><i style="--w:${Math.max(3, val(r) * 100 / max)}%;--d:${.45 + i * .1}s${color ? ';--c:' + color(r) : ''}"></i></span></div>`).join('')}</div>`;
+};
+
+/* ---------- slides ---------- */
+const S = [];
+S.push({ th: 'ink', html: `<div class="k rv">${esc(T.hi(D.name))}</div>
+  <div class="huge" style="font-size:33cqw">${chars(D.year, .15)}</div>
+  ${rv(`<p class="p">${esc(T.intro)}</p>`, .7)}<div class="sp"></div>${rv(`<div class="meta">${esc(T.tapgo)}</div>`, 1.2)}` });
+
+const active = tot.active_days || 1;
+S.push({ th: 'lime', html: `${rv(`<div class="h">${esc(T.youmade)}</div>`, 0)}${rv(cnt(tot.commits), .15)}${rv(`<div class="h">${esc(T.commits)}</div>`, .3)}
+  ${rv(`<p class="p">${T.across(tot.repos, tot.active_days)}</p>`, .6)}${rv(`<p class="p">${T.perday((tot.commits / active).toFixed(1).replace('.', L === 'pt' ? ',' : '.'))}</p>`, .8)}` });
+
+S.push({ th: 'violet', html: `${rv(`<div class="k">${esc(T.lines)}</div>`, 0)}
+  ${rv(`<div class="big" style="color:var(--ac);${fitN(Math.max(tot.added, tot.removed) * 10, 16)}">+<span data-count="${tot.added}">0</span></div><div class="meta">${esc(T.written)}</div>`, .15)}
+  ${rv(`<div class="big" style="${fitN(Math.max(tot.added, tot.removed) * 10, 16)}">−<span data-count="${tot.removed}">0</span></div><div class="meta">${esc(T.erased)}</div>`, .35)}
+  ${rv(`<p class="p" style="margin-top:3cqw">${tot.removed > tot.added * .5 ? esc(T.delgood) : T.netgood(nf(tot.added - tot.removed))}</p>`, .7)}` });
+
+S.push({ th: 'ink', html: `${rv(`<div class="h">${esc(T.yearbyday)}</div>`, 0)}${calendar()}
+  ${rv(`<p class="p">${T.busiest(fd(D.busiest.date), D.busiest.commits)}</p>`, 1.3)}` });
+
+S.push({ th: 'orange', html: `${rv(cnt(D.streak.length), 0)}${rv(`<div class="h">${esc(T.days)}</div>`, .2)}
+  ${rv(`<p class="p">${D.streak.length > 1 ? esc(T.streak(fd(D.streak.start), fd(D.streak.end))) : esc(T.streak1)}</p>`, .5)}` });
+
+const peak = D.hours.indexOf(Math.max(...D.hours));
+S.push({ th: 'blue', html: `${rv(`<div class="h">${esc(T.clock)}</div>`, 0)}${clock()}${rv(`<p class="p">${T.peak(peak)}</p>`, 1.2)}` });
+
+const wmax = Math.max(1, ...D.weekdays), wbest = D.weekdays.indexOf(wmax);
+S.push({ th: 'paper', html: `${rv(`<div class="h">${esc(T.weekdays)}</div>`, 0)}
+  <div class="weeks rv" style="--d:.1s">${D.weekdays.map((n, i) => `<div><i style="--i:${i};--h:${Math.max(4, n * 100 / wmax)}%${i === wbest ? '' : ';opacity:.35'}"></i><span>${T.wd[i]}</span></div>`).join('')}</div>
+  ${rv(`<p class="p">${T.bestwd(T.wdFull[wbest])}</p>`, .9)}` });
+
+const pc = T.personas[D.persona], late = Math.round(D.hours.slice(0, 5).reduce((a, b) => a + b, 0) * 100 / tot.commits);
+S.push({ th: 'pink', html: `${rv(`<div class="k">${esc(T.youare)}</div>`, 0)}<div class="emoji pop" style="--d:.2s">${pc[1]}</div>
+  <div class="h" style="font-size:12cqw">${chars(pc[0], .45)}</div>${rv(`<p class="p">${esc(pc[2](D.persona === 'owl' ? late : D.weekend_pct))}</p>`, 1.1)}` });
+
+if (D.night && D.night.message) S.push({ th: 'ink', html: `${rv(`<div class="k">${esc(T.latest)}</div>`, 0)}
+  <div class="huge">${chars(D.night.time, .15)}</div>${rv(`<p class="q">${esc(D.night.message)}</p>`, .7)}${rv(`<div class="meta">${esc(T.at(fd(D.night.date), D.night.repo))}</div>`, .9)}` });
+
+if (D.ignored && D.ignored.lines > 20000) S.push({ th: 'pink', html: `${rv(`<div class="k">${esc(T.confess)}</div>`, 0)}
+  ${rv(cnt(D.ignored.lines), .15)}${rv(`<div class="h">${esc(T.confessL)}</div>`, .3)}
+  ${rv(`<p class="p">${T.confessP(esc(D.ignored.top))}</p>`, .6)}` });
+
+if (D.langs.length) S.push({ th: 'paper', html: `${rv(`<div class="h">${esc(T.langs)}</div>`, 0)}
+  ${hbars(D.langs, r => r.lines, r => `${r.name} · ${String(r.pct).replace('.', L === 'pt' ? ',' : '.')}%`, r => r.color)}` });
+
+S.push({ th: 'violet', html: `${rv(`<div class="h">${esc(T.repos)}</div>`, 0)}${hbars(D.repos, r => r.commits, r => r.name)}
+  ${rv(`<div class="meta">${esc(T.commits)}</div>`, 1)}` });
+
+if (D.words.length) { const wm = D.words[0][1];
+  S.push({ th: 'lime', html: `${rv(`<div class="h">${esc(T.words)}</div>`, 0)}
+    <div class="words">${D.words.map(([w, n], i) => `<span class="pop" style="--d:${.2 + i * .09}s;font-size:${5 + 9 * (n / wm)}cqw;opacity:${.45 + .55 * (n / wm)}">${esc(w)}</span>`).join('')}</div>
+    ${D.fix_pct ? rv(`<p class="p">${T.fixes(D.fix_pct)}</p>`, 1.1) : ''}` }); }
+
+if (D.biggest && D.biggest.lines) S.push({ th: 'orange', html: `${rv(`<div class="k">${esc(T.biggest)}</div>`, 0)}${rv(cnt(D.biggest.lines), .1)}
+  ${rv(`<div class="h">${esc(T.blines)}</div>`, .3)}${D.biggest.message ? rv(`<p class="q">${esc(D.biggest.message)}</p>`, .6) : ''}${rv(`<div class="meta">${esc(T.at(fd(D.biggest.date), D.biggest.repo))}</div>`, .8)}` });
+
+if (D.first.message) S.push({ th: 'blue', html: `${rv(`<div class="h">${esc(T.firstlast)}</div>`, 0)}
+  ${rv(`<div class="k">${esc(T.first)} · ${esc(fd(D.first.date))}</div><p class="q">${esc(D.first.message)}</p><div class="meta">${esc(D.first.repo)}</div>`, .2)}
+  ${rv(`<div class="k">${esc(T.last)} · ${esc(fd(D.last.date))}</div><p class="q">${esc(D.last.message)}</p><div class="meta">${esc(D.last.repo)}</div>`, .6)}` });
+
+const topLang = D.langs[0] ? D.langs[0].name : '—';
+S.push({ th: 'ink', last: true, cls: 'summary', html: `${rv(`<div class="h">${esc(T.summary(D.year))}</div>`, 0)}
+  <div class="grid">${[[nf(tot.commits), T.s_commits], [nf(tot.repos), T.s_repos], [nf(tot.active_days), T.s_days], [nf(D.streak.length), T.s_streak], [nf(tot.added), T.s_added], [topLang, T.s_lang]]
+    .map(([v, k], i) => `<div class="pop" style="--d:${.15 + i * .07}s"><b style="--fs:${34 / (String(v).length * .6)}cqw">${esc(v)}</b><span>${esc(k)}</span></div>`).join('')}</div>
+  ${rv(`<p class="p"><b>${esc(pc[1])} ${esc(pc[0])}</b></p>`, .7)}<div class="sp"></div>
+  ${rv(`<div class="acts"><button class="btn" id="dl">${esc(T.download)}</button><button class="btn g" id="again">${esc(T.again)}</button></div>`, .9)}
+  ${rv(`<div class="meta" style="font-size:2.8cqw">${esc(T.made)}</div>`, 1.1)}` });
+
+/* ---------- motor dos stories ---------- */
+const box = $('#slides'), bars = $('#bars');
+box.innerHTML = S.map((s, i) => `<section class="slide th-${s.th} ${s.cls || ''}" data-i="${i}" aria-hidden="true">${s.html}</section>`).join('');
+bars.innerHTML = S.map(() => '<i><b></b></i>').join('');
+$('#yr').textContent = D.year; $('#help').textContent = T.help;
+const slides = [...box.children], segs = [...bars.children];
+const DUR = 6500, RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let cur = -1, t0 = 0, elapsed = 0, paused = false, held = false, raf = 0;
+
+function countUps(el) {
+  el.querySelectorAll('[data-count]').forEach(c => {
+    const to = +c.dataset.count, st = performance.now(), d = RM ? 1 : 1600;
+    const step = now => { const k = Math.min(1, (now - st) / d), e = 1 - Math.pow(1 - k, 4); c.textContent = nf(to * e); if (k < 1) requestAnimationFrame(step); };
+    requestAnimationFrame(step);
+  });
+}
+function go(i) {
+  i = Math.max(0, Math.min(S.length - 1, i));
+  if (i === cur) return;
+  slides.forEach((s, k) => { s.classList.remove('on'); s.setAttribute('aria-hidden', 'true'); });
+  const s = slides[i]; void s.offsetWidth; s.classList.add('on'); s.setAttribute('aria-hidden', 'false');
+  $('#stage').className = 'stage th-' + S[i].th;
+  segs.forEach((g, k) => { g.classList.toggle('done', k < i); g.firstChild.style.transform = k < i ? 'scaleX(1)' : 'scaleX(0)'; });
+  $('#tap').style.display = S[i].last ? 'none' : '';
+  cur = i; elapsed = 0; t0 = performance.now(); countUps(s);
+}
+function loop(now) {
+  if (!paused && !held && !S[cur].last && !document.hidden) {
+    elapsed += now - t0;
+    segs[cur].firstChild.style.transform = `scaleX(${Math.min(1, elapsed / DUR)})`;
+    if (elapsed >= DUR) go(cur + 1);
+  }
+  t0 = now; raf = requestAnimationFrame(loop);
+}
+const setPause = p => { paused = p; $('#pause').textContent = p ? '▶' : '❚❚'; $('#pause').setAttribute('aria-label', p ? 'play' : 'pause'); };
+$('#pause').addEventListener('click', e => { e.stopPropagation(); setPause(!paused); });
+let downAt = 0;
+$('#tap').addEventListener('pointerdown', () => { downAt = performance.now(); held = true; });
+$('#tap').addEventListener('pointerup', e => { held = false; if (performance.now() - downAt < 250) go(cur + +e.target.dataset.dir); });
+$('#tap').addEventListener('pointercancel', () => { held = false; });
+$('#tap').addEventListener('pointerleave', () => { held = false; });
+addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === 'PageDown') go(cur + 1);
+  else if (e.key === 'ArrowLeft' || e.key === 'PageUp') go(cur - 1);
+  else if (e.key === ' ') { e.preventDefault(); setPause(!paused); }
+  else if (e.key === 'Home') go(0);
+  else if (e.key === 'End') go(S.length - 1);
+});
+let sx = 0;
+$('#stage').addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
+$('#stage').addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 60) go(cur + (dx < 0 ? 1 : -1)); }, { passive: true });
+$('#again').addEventListener('click', () => { cur = -1; go(0); });
+$('#dl').addEventListener('click', downloadCard);
+go(0); raf = requestAnimationFrame(loop);
+
+/* ---------- cartão para compartilhar (1080×1920) ---------- */
+function downloadCard() {
+  const W = 1080, H = 1920, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const c = cv.getContext('2d'), css = getComputedStyle(document.documentElement);
+  const ink = '#0E0E11', paper = '#F4F0E6', lime = '#C6FF3D', SANS = css.getPropertyValue('--sans'), MONO = css.getPropertyValue('--mono');
+  c.fillStyle = ink; c.fillRect(0, 0, W, H);
+  const fit = (txt, weight, size, maxW, font = SANS) => { let s = size; do { c.font = `${weight} ${s}px ${font}`; s -= 4; } while (c.measureText(txt).width > maxW && s > 20); };
+  c.fillStyle = paper; c.font = `600 34px ${MONO}`; c.fillText(T.cardTitle(D.year), 90, 170);
+  c.fillStyle = lime; fit(nf(tot.commits), 900, 340, W - 180); c.fillText(nf(tot.commits), 80, 480);
+  c.fillStyle = paper; c.font = `800 72px ${SANS}`; c.fillText(T.commits, 90, 570);
+  const cells = [[nf(tot.repos), T.s_repos], [nf(tot.active_days), T.s_days], [nf(D.streak.length), T.s_streak], [nf(tot.added), T.s_added]];
+  cells.forEach(([v, k], i) => {
+    const x = 90 + (i % 2) * 460, y = 660 + Math.floor(i / 2) * 230;
+    c.strokeStyle = 'rgba(244,240,230,.18)'; c.lineWidth = 2; c.beginPath(); c.roundRect(x, y, 440, 200, 28); c.stroke();
+    c.fillStyle = lime; fit(v, 900, 96, 380); c.fillText(v, x + 32, y + 115);
+    c.fillStyle = 'rgba(244,240,230,.7)'; c.font = `600 26px ${MONO}`; c.fillText(k.toUpperCase(), x + 32, y + 165);
+  });
+  // linguagens
+  let y = 1180; c.fillStyle = paper; c.font = `600 30px ${MONO}`; c.fillText((L === 'pt' ? 'LINGUAGENS' : 'LANGUAGES'), 90, y);
+  const lt = D.langs.slice(0, 4), lmax = Math.max(1, ...lt.map(l => l.lines));
+  lt.forEach((l, i) => {
+    const yy = y + 50 + i * 78;
+    c.fillStyle = paper; c.font = `800 40px ${SANS}`; c.fillText(l.name, 90, yy + 30);
+    c.fillStyle = 'rgba(244,240,230,.12)'; c.beginPath(); c.roundRect(420, yy + 6, 570, 26, 13); c.fill();
+    c.fillStyle = l.color; c.beginPath(); c.roundRect(420, yy + 6, Math.max(26, 570 * l.lines / lmax), 26, 13); c.fill();
+  });
+  // persona
+  y = 1590; c.fillStyle = lime; c.beginPath(); c.roundRect(90, y, 900, 150, 75); c.fill();
+  c.fillStyle = ink; fit(`${pc[1]}  ${pc[0]}`, 900, 64, 820); c.textAlign = 'center'; c.fillText(`${pc[1]}  ${pc[0]}`, W / 2, y + 98); c.textAlign = 'left';
+  c.fillStyle = 'rgba(244,240,230,.5)'; c.font = `500 28px ${MONO}`; c.fillText(T.cardFoot, 90, 1840);
+  cv.toBlob(b => {
+    const f = new File([b], `git-retro-${D.year}.png`, { type: 'image/png' });
+    if (navigator.canShare && navigator.canShare({ files: [f] }) && matchMedia('(pointer:coarse)').matches) { navigator.share({ files: [f] }).catch(() => {}); return; }
+    const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = f.name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+  }, 'image/png');
+}
+</script>
+</body>
+</html>
