@@ -169,6 +169,59 @@ def resolve_identity(commits, seeds, names=()):
     return emails, names
 
 
+BOT = re.compile(r"\[bot\]|dependabot|renovate|github-actions|actions-user|noreply@github\.com$", re.I)
+
+
+def is_bot(c):
+    return bool(BOT.search(c.name) or BOT.search(c.email))
+
+
+def group_people(commits):
+    """Junta e-mails e nomes que aparecem juntos: cada grupo é uma pessoa."""
+    parent = {}
+    def find(x):
+        parent.setdefault(x, x)
+        while parent[x] != x:
+            parent[x] = parent[parent[x]]; x = parent[x]
+        return x
+    for c in commits:
+        parent[find(("e", c.email))] = find(("n", c.name.strip().lower()))
+    groups = defaultdict(list)
+    for c in commits:
+        groups[find(("e", c.email))].append(c)
+    return list(groups.values())
+
+
+def team(commits, year):
+    """Ranking e prêmios do time. Cada pessoa passa pelo mesmo cálculo da retrospectiva individual."""
+    people = []
+    for cs in group_people(commits):
+        d = compute(cs, year, show_messages=False)
+        name = Counter(c.name for c in cs).most_common(1)[0][0] or cs[0].email.split("@")[0]
+        night = d["night"]
+        people.append({
+            "name": name, "commits": d["totals"]["commits"], "added": d["totals"]["added"], "removed": d["totals"]["removed"],
+            "days": d["totals"]["active_days"], "streak": d["streak"]["length"], "persona": d["persona"],
+            "fixes": round(d["fix_pct"] * d["totals"]["commits"] / 100),
+            "night": night["time"] if night else None,
+            "_night_rank": _night_rank(datetime.strptime(night["time"], "%H:%M")) if night else -1,
+        })
+    people.sort(key=lambda p: -p["commits"])
+    awards = []
+    def award(key, field, fmt=None, minimum=1):
+        best = max(people, key=lambda p: p[field])
+        if best[field] >= minimum:
+            awards.append({"key": key, "name": best["name"], "value": fmt(best) if fmt else best[field]})
+    award("commits", "commits")
+    award("streak", "streak", minimum=2)
+    award("owl", "_night_rank", fmt=lambda p: p["night"], minimum=22)
+    award("cleaner", "removed", minimum=100)
+    award("fixer", "fixes", minimum=2)
+    for p in people:
+        p.pop("_night_rank")
+    return {"size": len(people), "members": people[:10], "awards": awards}
+
+
 def top_authors(commits, n=8):
     return Counter((c.email, c.name) for c in commits).most_common(n)
 

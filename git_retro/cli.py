@@ -10,7 +10,7 @@ from datetime import date
 from pathlib import Path
 
 from . import __version__
-from .core import compute, summary, config_emails, find_repos, read_commits, resolve_identity, top_authors
+from .core import compute, summary, team, is_bot, config_emails, find_repos, read_commits, resolve_identity, top_authors
 from .render import render
 
 
@@ -32,6 +32,7 @@ def main(argv=None):
     ap.add_argument("--no-messages", action="store_true", help="hide commit messages from the page")
     ap.add_argument("--anonymize", action="store_true", help="replace repository names with projeto-A, projeto-B…")
     ap.add_argument("--depth", type=int, default=4, help="how deep to look for repositories (default: 4)")
+    ap.add_argument("--team", action="store_true", help="the whole team instead of just you: leaderboard and awards")
     ap.add_argument("--demo", action="store_true", help="use a made-up year instead of your repositories")
     ap.add_argument("--no-open", action="store_true", help="do not open the page in the browser")
     ap.add_argument("--version", action="version", version=f"git-retro {__version__}")
@@ -44,9 +45,9 @@ def main(argv=None):
 
     if a.demo:
         from .demo import demo_commits
-        mine = demo_commits(year, lang=lang)
-        prev = demo_commits(year - 1, seed=3, lang=lang, scale=.7)
-        name = a.name or ("Você" if lang == "pt" else "You")
+        mine = demo_commits(year, lang=lang, team=a.team)
+        prev = demo_commits(year - 1, seed=3, lang=lang, scale=.7, team=a.team)
+        name = a.name or ("Acme" if a.team else ("Você" if lang == "pt" else "You"))
     else:
         repos = find_repos(a.paths, a.depth)
         if not repos:
@@ -60,28 +61,37 @@ def main(argv=None):
         if not commits:
             say(f"Nenhum commit em {year} nesses repositórios.", f"No commits in {year} in those repositories.")
             return 1
-        seeds = {x for x in a.author if "@" in x} or config_emails(repos)
-        names = {x for x in a.author if "@" not in x}
-        if not seeds and not names:
-            (email, nm), _ = top_authors(commits, 1)[0]
-            seeds = {email}
-            say(f"  (sem user.email configurado; usando quem mais commitou: {nm} <{email}>)",
-                f"  (no user.email configured; using the top committer: {nm} <{email}>)")
-        emails, names = resolve_identity(commits + before, seeds, names)
-        mine = [c for c in commits if c.email in emails or c.name.lower() in names]
-        prev = [c for c in before if c.email in emails or c.name.lower() in names]
-        say(f"  você = {', '.join(sorted(emails))}", f"  you = {', '.join(sorted(emails))}")
-        if not mine:
-            say("Nenhum commit seu encontrado. Quem aparece nesses repositórios:",
-                "None of the commits are yours. Who shows up in these repositories:")
-            for (email, nm), n in top_authors(commits):
-                print(f"    {n:5}  {nm} <{email}>", file=sys.stderr)
-            say("Rode de novo com --author seu@email (pode repetir).", "Run again with --author you@email (repeatable).")
-            return 1
-        name = a.name or (mine[-1].name.split()[0] if mine[-1].name else "")
+        if a.team:
+            mine = [c for c in commits if not is_bot(c)]
+            prev = [c for c in before if not is_bot(c)]
+            roots = {Path(p).expanduser().resolve() for p in a.paths}
+            name = a.name or (next(iter(roots)).name if len(roots) == 1 else "")
+        else:
+            seeds = {x for x in a.author if "@" in x} or config_emails(repos)
+            names = {x for x in a.author if "@" not in x}
+            if not seeds and not names:
+                (email, nm), _ = top_authors(commits, 1)[0]
+                seeds = {email}
+                say(f"  (sem user.email configurado; usando quem mais commitou: {nm} <{email}>)",
+                    f"  (no user.email configured; using the top committer: {nm} <{email}>)")
+            emails, names = resolve_identity(commits + before, seeds, names)
+            mine = [c for c in commits if c.email in emails or c.name.lower() in names]
+            prev = [c for c in before if c.email in emails or c.name.lower() in names]
+            say(f"  você = {', '.join(sorted(emails))}", f"  you = {', '.join(sorted(emails))}")
+            if not mine:
+                say("Nenhum commit seu encontrado. Quem aparece nesses repositórios:",
+                    "None of the commits are yours. Who shows up in these repositories:")
+                for (email, nm), n in top_authors(commits):
+                    print(f"    {n:5}  {nm} <{email}>", file=sys.stderr)
+                say("Rode de novo com --author seu@email (pode repetir).", "Run again with --author you@email (repeatable).")
+                return 1
+            name = a.name or (mine[-1].name.split()[0] if mine[-1].name else "")
 
     data = compute(mine, year, show_messages=not a.no_messages, anonymize=a.anonymize, name=name)
     data["lang"] = lang
+    if a.team:
+        data["team"] = team(mine, year)
+        say(f"  time: {data['team']['size']} pessoas", f"  team: {data['team']['size']} people")
     data["prev"] = summary(compute(prev, year - 1)) if prev else None
     ign = data.pop("_ignored")
     out = Path(a.output or f"git-retro-{year}.html")

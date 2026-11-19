@@ -93,6 +93,11 @@ body{display:grid;place-items:center;user-select:none;-webkit-user-select:none}
 .hb .t{grid-column:1/-1;height:2.6cqw;border-radius:2cqw;background:color-mix(in srgb,var(--fg) 14%,transparent);overflow:hidden}
 .hb .t i{display:block;height:100%;border-radius:inherit;background:var(--c,var(--ac));width:var(--w);transform:scaleX(0);transform-origin:left}
 .on .hb .t i{transition:transform 1.2s var(--ease);transition-delay:var(--d,0s);transform:scaleX(1)}
+.aw{display:grid;gap:4cqw}
+.awr{display:grid;grid-template-columns:13cqw 1fr;gap:4cqw;align-items:center}
+.ico.awi{width:13cqw;height:13cqw;color:var(--ac)}
+.awr b{display:block;font-weight:800;font-size:6.6cqw;letter-spacing:-.03em;line-height:1.05}
+.awr span{font:600 3.4cqw var(--mono);opacity:.7}
 .words{display:flex;flex-wrap:wrap;gap:1.6cqw 3cqw;align-items:baseline}
 .words span{font-weight:800;letter-spacing:-.03em;line-height:1}
 .pm{display:flex;gap:4cqw;align-items:baseline;flex-wrap:wrap}
@@ -188,6 +193,18 @@ const T = {
     musicTip: 'Dica: nos stories, toque no ícone de música para pôr uma trilha.',
     webmNote: 'Este navegador grava em WebM, que o Instagram não aceita. No Chrome ou Safari atualizados o vídeo sai em MP4. Ou use a imagem.',
     noVideo: 'Este navegador não grava vídeo. A imagem funciona em qualquer lugar.',
+    team: {
+      hi: n => n ? `Time ${n}.` : 'Oi, time.', intro: 'O ano do time no git chegou. Bora ver quem fez o quê?',
+      youmade: 'Neste ano o time fez', youare: 'O time é', summary: y => `Nosso ${y} no git`, cardTitle: y => `NOSSO ${y} NO GIT`,
+      vYear: 'O ano do time no git.', made: 'gerado localmente com git-retro --team · nada saiu do computador',
+      perday: n => `Uma média de <b>${n}</b> por dia em que o time commitou.`, yearbyday: 'O ano do time, dia a dia', months: 'O ano do time, mês a mês',
+      busiest: (d, n) => `O dia mais intenso do time foi <b>${d}</b>, com <b>${n} commits</b>.`, clock: 'O relógio do time',
+      peak: h => `O horário de pico do time é às <b>${h}h</b>.`, weekdays: 'O dia da semana do time', bestwd: d => `<b>${d}</b> é o dia do time.`,
+      langs: 'Linguagens do time', repos: 'Onde o time mais mexeu', fixes: p => `<b>${p}%</b> dos commits do time foram correções. Ninguém escapa.`,
+    },
+    who: 'Quem fez', people: n => `${n} ${n === 1 ? 'pessoa' : 'pessoas'} no time`, awardsT: 'Prêmios do ano',
+    aw: { commits: ['Mais commits', n => `${n} commits`], streak: ['Maior sequência', n => `${n} dias seguidos`], owl: ['Commit mais tarde', v => `às ${v}`],
+      cleaner: ['Mais linhas apagadas', n => `${nf(n)} linhas`], fixer: ['Mais correções', n => `${n} correções`] },
     vYear: 'Seu ano no git.', streakLine: n => `maior sequência: ${n} ${n === 1 ? 'dia' : 'dias'}`,
     shareHint: 'Para postar no Instagram: baixe a imagem e mande para o celular, ou abra este arquivo no celular e use o botão de compartilhar.',
     shareText: y => `Meu ${y} no git. Gere o seu: github.com/Ryuks-py/git-retro`, made: 'gerado localmente com git-retro · nada saiu do seu computador',
@@ -232,12 +249,25 @@ const T = {
     musicTip: 'Tip: in stories, tap the music icon to add a soundtrack.',
     webmNote: 'This browser records WebM, which Instagram doesn’t accept. Recent Chrome or Safari record MP4. Or use the image.',
     noVideo: 'This browser can’t record video. The image works everywhere.',
+    team: {
+      hi: n => n ? `Team ${n}.` : 'Hey, team.', intro: 'Your team’s year in git is here. Ready to see who did what?',
+      youmade: 'This year the team made', youare: 'The team is', summary: y => `Our ${y} in git`, cardTitle: y => `OUR ${y} IN GIT`,
+      vYear: 'Your team’s year in git.', made: 'generated locally with git-retro --team · nothing left the computer',
+      perday: n => `That’s <b>${n}</b> per day the team committed.`, yearbyday: 'The team’s year, day by day', months: 'The team’s year, month by month',
+      busiest: (d, n) => `The team’s busiest day was <b>${d}</b>, with <b>${n} commits</b>.`, clock: 'The team’s clock',
+      peak: h => `The team’s peak hour is <b>${h}:00</b>.`, weekdays: 'The team’s weekday', bestwd: d => `<b>${d}</b> is the team’s day.`,
+      langs: 'The team’s languages', repos: 'Where the team spent its time', fixes: p => `<b>${p}%</b> of the team’s commits were fixes. Nobody escapes.`,
+    },
+    who: 'Who did it', people: n => `${n} ${n === 1 ? 'person' : 'people'} on the team`, awardsT: 'Awards of the year',
+    aw: { commits: ['Most commits', n => `${n} commits`], streak: ['Longest streak', n => `${n} days in a row`], owl: ['Latest commit', v => `at ${v}`],
+      cleaner: ['Most lines deleted', n => `${nf(n)} lines`], fixer: ['Most fixes', n => `${n} fixes`] },
     vYear: 'Your year in git.', streakLine: n => `longest streak: ${n} ${n === 1 ? 'day' : 'days'}`,
     shareHint: 'To post on Instagram: download the image and send it to your phone, or open this file on your phone and use the share button.',
     shareText: y => `My ${y} in git. Make yours: github.com/Ryuks-py/git-retro`, made: 'generated locally with git-retro · nothing left your computer',
     cardTitle: y => `MY ${y} IN GIT`, cardFoot: 'git-retro', peakK: 'peak hour', langsK: 'languages', cardCommits: 'commits',
   },
 }[L];
+if (D.team) Object.assign(T, T.team);
 document.documentElement.lang = L === 'pt' ? 'pt-BR' : 'en';
 
 const $ = s => document.querySelector(s);
@@ -313,6 +343,15 @@ const active = tot.active_days || 1;
 S.push({ th: 'lime', html: `${rv(`<div class="h">${esc(T.youmade)}</div>`, 0)}${rv(cnt(tot.commits), .15)}${rv(`<div class="h">${esc(T.commits)}</div>`, .3)}
   ${rv(`<p class="p">${T.across(tot.repos, tot.active_days)}</p>`, .6)}${rv(`<p class="p">${T.perday((tot.commits / active).toFixed(1).replace('.', L === 'pt' ? ',' : '.'))}</p>`, .8)}` });
 
+const AW_ICON = { commits: 'burst', streak: 'marathon', owl: 'owl', cleaner: 'cleaner', fixer: 'firefighter' };
+if (D.team) {
+  const tm = D.team, mx = Math.max(1, ...tm.members.map(m => m.commits));
+  S.push({ th: 'orange', html: `${rv(`<div class="h">${esc(T.who)}</div>`, 0)}
+    <div class="hb">${tm.members.slice(0, 7).map((m, i) => `<div class="r rv" style="--d:${.2 + i * .09}s"><span class="n">${icon(m.persona, 'sm')}${esc(m.name)}</span><span class="v">${nf(m.commits)}</span>
+      <span class="t"><i style="--w:${Math.max(3, m.commits * 100 / mx)}%;--d:${.4 + i * .09}s"></i></span></div>`).join('')}</div>
+    ${rv(`<div class="meta">${esc(T.people(tm.size))} · ${esc(T.commits)}</div>`, 1)}` });
+}
+
 S.push({ th: 'violet', html: `${rv(`<div class="k">${esc(T.lines)}</div>`, 0)}
   ${rv(`<div class="big" style="color:var(--ac);${fitN(Math.max(tot.added, tot.removed) * 10, 16)}">+<span data-count="${tot.added}">0</span></div><div class="meta">${esc(T.written)}</div>`, .15)}
   ${rv(`<div class="big" style="${fitN(Math.max(tot.added, tot.removed) * 10, 16)}">−<span data-count="${tot.removed}">0</span></div><div class="meta">${esc(T.erased)}</div>`, .35)}
@@ -360,6 +399,8 @@ if (D.biggest && D.biggest.lines) S.push({ th: 'orange', html: `${rv(`<div class
   ${rv(`<div class="h">${esc(T.blines)}</div>`, .3)}${D.biggest.message ? rv(`<p class="q">${esc(D.biggest.message)}</p>`, .6) : ''}${rv(`<div class="meta">${esc(T.at(fd(D.biggest.date), D.biggest.repo))}</div>`, .8)}` });
 
 const topLang = D.langs[0] ? D.langs[0].name : '—';
+if (D.team && D.team.awards.length) S.push({ th: 'paper', html: `${rv(`<div class="h">${esc(T.awardsT)}</div>`, 0)}
+  <div class="aw">${D.team.awards.map((a, i) => rv(`${icon(AW_ICON[a.key], 'awi')}<div><div class="k">${esc(T.aw[a.key][0])}</div><b>${esc(a.name)}</b><span>${esc(T.aw[a.key][1](a.value))}</span></div>`, .15 + i * .12, 'awr')).join('')}</div>` });
 const delta = (now, before) => { if (!before) return null; const p = Math.round((now - before) * 100 / before); return { p, txt: (p > 0 ? '+' : p < 0 ? '−' : '±') + Math.abs(p) + '%' }; };
 const P = D.prev;
 if (P && P.commits >= 10) {
@@ -504,6 +545,20 @@ const SCENES = [
     if (ch) enter((lt - 1.3) / .5, 30, () => { font(800, 50); const w = c.measureText(ch.txt).width + 60; c.fillStyle = COL.ink; rr(VX, 1350, w, 84, 42); c.fill(); c.fillStyle = COL.lime; c.fillText(ch.txt, VX + 30, 1409); });
     enter((lt - 1) / .6, 40, () => { c.fillStyle = COL.ink; font(500, 48); wrap(plain(T.across(tot.repos, tot.active_days)), VX, ch ? 1540 : 1420, VCW, 62); });
   } },
+  ...(D.team ? [{ d: 2.6, bg: '#FF5A1F', draw(lt) {   // quem fez (só no modo time)
+    const ms = D.team.members.slice(0, 6), mx = Math.max(1, ...ms.map(m => m.commits));
+    enter(lt / .5, 40, () => { c.fillStyle = '#fff'; font(800, 84); c.fillText(T.who, VX, 470); });
+    ms.forEach((m, i) => {
+      const y = 620 + i * 190, p = (lt - .25 - i * .12) / .5;
+      enter(p, 50, () => {
+        c.fillStyle = '#fff'; fit(m.name, 800, 58, VCW - 200); c.fillText(m.name, VX, y);
+        c.textAlign = 'right'; font(600, 40, MONO); c.fillText(nf(m.commits), VW - VX, y); c.textAlign = 'left';
+        c.fillStyle = 'rgba(255,255,255,.18)'; rr(VX, y + 30, VCW, 30, 15); c.fill();
+        c.fillStyle = COL.ink; rr(VX, y + 30, Math.max(30, VCW * m.commits / mx * eo((lt - .45 - i * .12) / 1)), 30, 15); c.fill();
+      });
+    });
+    enter((lt - 1.2) / .5, 30, () => { c.fillStyle = '#fff'; c.globalAlpha *= .8; font(600, 32, MONO); track(2); c.fillText(T.people(D.team.size).toUpperCase(), VX, 1800); track(0); });
+  } }] : []),
   { d: 2.7, bg: COL.ink, draw(lt) {               // calendário se acendendo
     enter(lt / .5, 40, () => { c.fillStyle = COL.paper; font(800, 80); c.fillText(T.yearbyday, VX, 470); });
     const yb = drawCal(620, lt - .2);

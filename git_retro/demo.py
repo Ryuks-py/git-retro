@@ -33,7 +33,11 @@ MSGS_EN = [
 ]
 
 
-def demo_commits(year: int, seed: int = 7, lang: str = "en", scale: float = 1.0):
+TEAM = [("Ana Souza", "ana@exemplo.dev", 34, 0), ("Bruno Lima", "bruno@exemplo.dev", 24, 0), ("Carla Dias", "carla@exemplo.dev", 18, 0),
+        ("Diego Rocha", "diego@exemplo.dev", 14, 4), ("Eva Martins", "eva@exemplo.dev", 10, -3)]
+
+
+def demo_commits(year: int, seed: int = 7, lang: str = "en", scale: float = 1.0, team: bool = False):
     rnd = random.Random(seed)
     tz = timezone(timedelta(hours=-3))
     msgs = MSGS if lang == "pt" else MSGS_EN
@@ -50,10 +54,19 @@ def demo_commits(year: int, seed: int = 7, lang: str = "en", scale: float = 1.0)
                 repo = rnd.choices(REPOS, weights=[30, 22, 18, 8, 4, 10])[0]
                 files = [(rnd.randrange(1, 140), rnd.randrange(0, 60), f) for f in rnd.sample(FILES[repo], rnd.randint(1, min(3, len(FILES[repo]))))]
                 n += 1
-                out.append(Commit(f"{n:040x}", "you@example.dev", you, when, rnd.choice(msgs), repo, files))
+                who, mail = you, "you@example.dev"
+                if team:
+                    k = rnd.choices(range(len(TEAM)), weights=[t[2] for t in TEAM])[0]
+                    who, mail, _, shift = TEAM[k]
+                    if rnd.random() < .7:  # cada pessoa tem o seu projeto preferido
+                        repo = REPOS[k]
+                        files = [(rnd.randrange(1, 140), rnd.randrange(0, 60), f) for f in rnd.sample(FILES[repo], rnd.randint(1, min(3, len(FILES[repo]))))]
+                    when = when + timedelta(hours=shift) if 0 <= h + shift < 24 else when
+                out.append(Commit(f"{n:040x}", mail, who, when, rnd.choice(msgs), repo, files))
         day += timedelta(days=1)
     # um commit de madrugada que todo mundo já fez
-    out.append(Commit("f" * 40, "you@example.dev", you, datetime(year, 9, 12, 4, 52, tzinfo=tz),
+    who, mail = (TEAM[3][0], TEAM[3][1]) if team else (you, "you@example.dev")
+    out.append(Commit("f" * 40, mail, who, datetime(year, 9, 12, 4, 52, tzinfo=tz),
                       "hotfix: produção caiu, não me pergunte" if lang == "pt" else "hotfix: prod is down, don't ask",
                       "api-pagamentos", [(12, 3, "app/services/pix.py")]))
     return out

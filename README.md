@@ -6,7 +6,7 @@ It runs **100% locally**. No account, no token, no upload. Your code never leave
 
 ![Slides from a demo year](docs/preview.png)
 
-**[See the live demo →](https://ryuks-py.github.io/git-retro/)** · [em português](https://ryuks-py.github.io/git-retro/pt.html)
+**[See the live demo →](https://ryuks-py.github.io/git-retro/)** · [team mode demo](https://ryuks-py.github.io/git-retro/team.html) · [em português](https://ryuks-py.github.io/git-retro/pt.html)
 
 ## Quick start
 
@@ -68,6 +68,14 @@ Each one is a measured trait. The page picks the one where you stand out the mos
 
 Navigate with **← →**, tap the sides, or swipe. Space pauses; press and hold also pauses.
 
+## Team mode
+
+```bash
+git-retro --team ~/code/our-product
+```
+
+The same story for everyone who committed to those repositories: a **Who did it** leaderboard with each person's persona, **Awards of the year** (most commits, longest streak, latest commit, most lines deleted, most fixes), the team's clock, calendar and languages, and a video with an extra leaderboard scene. Bots like Dependabot and GitHub Actions are left out, and people who used more than one e-mail are counted once. Made for the end-of-year post in the team channel.
+
 ## You have more than one e-mail? It figures that out
 
 Most people commit with a personal e-mail, a work e-mail and whatever their laptop had configured. git retro starts from the `user.email` in your git config and joins every e-mail that was used with the same author name. If it still can't find you, it lists who it saw so you can say which one is you:
@@ -88,6 +96,7 @@ git-retro [paths ...]        folders to scan (default: current folder)
   --anonymize                show repositories as projeto-A, projeto-B…
   -o, --output FILE          output file (default: git-retro-YEAR.html)
   --depth 4                  how deep to look for repositories
+  --team                     the whole team: leaderboard and awards
   --demo                     a made-up year, to see it without your data
   --no-open                  don't open the browser
 ```

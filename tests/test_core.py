@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from git_retro.core import compute, find_repos, read_commits, resolve_identity
+from git_retro.core import compute, find_repos, group_people, is_bot, read_commits, resolve_identity, team
 from git_retro.demo import demo_commits
 from git_retro.render import render
 
@@ -74,6 +74,17 @@ class GitRetroTest(unittest.TestCase):
         self.assertEqual(d["night"]["message"], "")
         self.assertEqual(d["words"], [])
         self.assertTrue(all(r["name"].startswith("projeto-") for r in d["repos"]))
+
+    def test_team_groups_people_and_gives_awards(self):
+        commit(self.repo, {"bot.txt": "x"}, "bump", "2026-03-06T10:00:00-03:00", email="49699333+dependabot[bot]@users.noreply.github.com", name="dependabot[bot]")
+        cs = [c for c in read_commits(self.repo, 2026) if not is_bot(c)]
+        self.assertEqual(len(group_people(cs)), 2)            # Eu (2 e-mails) e Colega; o robô fica de fora
+        t = team(cs, 2026)
+        self.assertEqual([m["name"] for m in t["members"]], ["Eu", "Colega"])
+        self.assertEqual(t["members"][0]["commits"], 4)
+        aw = {a["key"]: a for a in t["awards"]}
+        self.assertEqual(aw["commits"]["name"], "Eu")
+        self.assertEqual(aw["owl"]["value"], "02:15")
 
     def test_render_is_self_contained_and_escapes(self):
         d = compute(demo_commits(2026), 2026, name="</script><b>x")
