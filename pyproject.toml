@@ -25,7 +25,8 @@ Homepage = "https://github.com/Ryuks-py/git-retro"
 git-retro = "git_retro.cli:main"
 
 [tool.setuptools]
-packages = ["git_retro"]
+packages = ["git_retro", "git_retro.fonts"]
 
 [tool.setuptools.package-data]
-git_retro = ["template.html", "fonts/*.woff2", "fonts/*.txt"]
+git_retro = ["template.html"]
+"git_retro.fonts" = ["*.woff2", "*.txt"]
