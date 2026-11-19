@@ -117,6 +117,18 @@ body{display:grid;place-items:center;user-select:none;-webkit-user-select:none}
 .btn:focus-visible{outline:2px solid var(--fg);outline-offset:3px}
 .tap{position:absolute;inset:0;z-index:10;display:grid;grid-template-columns:30% 70%}
 .tap i{cursor:pointer}
+.mv{position:fixed;inset:0;z-index:100;display:flex;gap:28px;align-items:center;justify-content:center;flex-wrap:wrap;padding:16px;
+  background:rgba(14,14,17,.94);--ac:var(--lime);--bg:var(--ink);--fg:var(--paper);color:var(--paper);overflow:auto}
+.mv[hidden]{display:none}
+.mv canvas{height:min(74dvh,760px);width:auto;aspect-ratio:9/16;border-radius:18px;box-shadow:0 0 0 1px rgba(255,255,255,.08),0 30px 90px rgba(0,0,0,.6);background:var(--ink)}
+.mv-side{width:min(320px,100%);display:grid;gap:14px}
+.mv-side b{font-weight:800;font-size:26px;letter-spacing:-.02em}
+.mv-side p{font:500 13px/1.5 var(--mono);opacity:.7;min-height:1.5em}
+.mv-bar{height:4px;border-radius:2px;background:rgba(244,240,230,.15);overflow:hidden}
+.mv-bar i{display:block;height:100%;background:var(--lime);transform:scaleX(0);transform-origin:left}
+.mv-acts{display:grid;gap:10px}
+.mv .btn{font-size:16px;padding:15px 18px}
+@media (max-width:699px){.mv{flex-direction:column;flex-wrap:nowrap;justify-content:flex-start;gap:16px}.mv canvas{height:58dvh}.mv-side{width:100%}}
 .foot{position:absolute;bottom:4cqw;left:7cqw;right:7cqw;font:500 2.8cqw var(--mono);opacity:.5;z-index:20;color:var(--fg)}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01s!important;animation-delay:0s!important;transition-duration:.01s!important;transition-delay:0s!important}}
 </style>
@@ -129,6 +141,10 @@ body{display:grid;place-items:center;user-select:none;-webkit-user-select:none}
   <div class="tap" id="tap" aria-hidden="true"><i data-dir="-1"></i><i data-dir="1"></i></div>
 </div>
 <p class="help" id="help"></p>
+<div class="mv" id="mv" hidden role="dialog" aria-modal="true" aria-labelledby="mvt">
+  <canvas id="mvc" width="1080" height="1920"></canvas>
+  <div class="mv-side"><b id="mvt"></b><div class="mv-bar"><i id="mvp"></i></div><p id="mvs"></p><div class="mv-acts" id="mva"></div></div>
+</div>
 <script>
 const D = {"year": 2026, "name": "Você", "totals": {"commits": 636, "repos": 6, "active_days": 250, "added": 89296, "removed": 37075, "files": 23}, "days": {"2026-01-01": 1, "2026-01-02": 1, "2026-01-04": 1, "2026-01-05": 2, "2026-01-07": 2, "2026-01-08": 4, "2026-01-09": 1, "2026-01-10": 1, "2026-01-11": 1, "2026-01-13": 1, "2026-01-14": 1, "2026-01-15": 4, "2026-01-16": 1, "2026-01-18": 2, "2026-01-20": 2, "2026-01-21": 6, "2026-01-24": 2, "2026-01-26": 4, "2026-01-27": 1, "2026-01-28": 6, "2026-01-29": 6, "2026-01-30": 3, "2026-01-31": 6, "2026-02-01": 2, "2026-02-02": 1, "2026-02-03": 1, "2026-02-06": 4, "2026-02-08": 1, "2026-02-09": 3, "2026-02-11": 4, "2026-02-12": 4, "2026-02-13": 2, "2026-02-14": 1, "2026-02-16": 1, "2026-02-17": 4, "2026-02-18": 1, "2026-02-19": 1, "2026-02-20": 6, "2026-02-22": 4, "2026-02-23": 2, "2026-02-24": 2, "2026-02-26": 1, "2026-02-27": 2, "2026-02-28": 1, "2026-03-02": 1, "2026-03-03": 3, "2026-03-04": 2, "2026-03-05": 2, "2026-03-06": 4, "2026-03-09": 2, "2026-03-10": 3, "2026-03-11": 1, "2026-03-12": 1, "2026-03-13": 1, "2026-03-16": 1, "2026-03-17": 1, "2026-03-20": 1, "2026-03-21": 2, "2026-03-23": 6, "2026-03-24": 2, "2026-03-25": 4, "2026-03-26": 2, "2026-03-27": 6, "2026-03-30": 1, "2026-03-31": 2, "2026-04-03": 1, "2026-04-04": 1, "2026-04-05": 4, "2026-04-06": 1, "2026-04-07": 4, "2026-04-08": 4, "2026-04-09": 2, "2026-04-10": 2, "2026-04-11": 3, "2026-04-12": 4, "2026-04-13": 6, "2026-04-14": 2, "2026-04-15": 6, "2026-04-16": 1, "2026-04-17": 1, "2026-04-19": 6, "2026-04-20": 4, "2026-04-21": 1, "2026-04-22": 2, "2026-04-23": 2, "2026-04-24": 6, "2026-04-26": 3, "2026-04-27": 2, "2026-04-28": 1, "2026-04-29": 4, "2026-04-30": 2, "2026-05-01": 2, "2026-05-05": 3, "2026-05-06": 1, "2026-05-07": 1, "2026-05-08": 1, "2026-05-10": 2, "2026-05-11": 3, "2026-05-12": 1, "2026-05-13": 2, "2026-05-14": 2, "2026-05-15": 1, "2026-05-16": 2, "2026-05-18": 4, "2026-05-19": 1, "2026-05-20": 6, "2026-05-21": 2, "2026-05-24": 2, "2026-05-25": 4, "2026-05-27": 2, "2026-05-28": 3, "2026-05-31": 2, "2026-06-01": 3, "2026-06-02": 1, "2026-06-03": 2, "2026-06-04": 3, "2026-06-08": 6, "2026-06-11": 2, "2026-06-12": 6, "2026-06-13": 2, "2026-06-16": 3, "2026-06-17": 3, "2026-06-19": 1, "2026-06-23": 1, "2026-06-24": 2, "2026-06-26": 1, "2026-06-27": 2, "2026-06-29": 2, "2026-07-01": 1, "2026-07-02": 1, "2026-07-03": 4, "2026-07-05": 4, "2026-07-06": 2, "2026-07-07": 3, "2026-07-09": 3, "2026-07-10": 4, "2026-07-13": 2, "2026-07-14": 1, "2026-07-15": 4, "2026-07-17": 1, "2026-07-18": 1, "2026-07-19": 6, "2026-07-22": 1, "2026-07-23": 2, "2026-07-27": 4, "2026-07-29": 2, "2026-07-30": 1, "2026-07-31": 4, "2026-08-03": 2, "2026-08-04": 2, "2026-08-06": 1, "2026-08-07": 3, "2026-08-10": 2, "2026-08-11": 1, "2026-08-12": 2, "2026-08-13": 6, "2026-08-14": 1, "2026-08-17": 2, "2026-08-18": 6, "2026-08-21": 1, "2026-08-22": 6, "2026-08-23": 1, "2026-08-24": 3, "2026-08-25": 2, "2026-08-26": 1, "2026-08-27": 6, "2026-08-30": 6, "2026-08-31": 3, "2026-09-01": 4, "2026-09-02": 1, "2026-09-03": 1, "2026-09-07": 2, "2026-09-08": 6, "2026-09-10": 4, "2026-09-12": 2, "2026-09-13": 2, "2026-09-14": 4, "2026-09-16": 1, "2026-09-18": 3, "2026-09-20": 2, "2026-09-21": 2, "2026-09-22": 1, "2026-09-23": 6, "2026-09-24": 3, "2026-09-25": 4, "2026-09-27": 6, "2026-09-28": 1, "2026-09-29": 1, "2026-09-30": 6, "2026-10-01": 6, "2026-10-02": 6, "2026-10-04": 2, "2026-10-06": 2, "2026-10-07": 1, "2026-10-08": 2, "2026-10-09": 4, "2026-10-12": 2, "2026-10-13": 6, "2026-10-14": 4, "2026-10-16": 4, "2026-10-17": 2, "2026-10-19": 3, "2026-10-20": 1, "2026-10-21": 3, "2026-10-23": 1, "2026-10-25": 2, "2026-10-27": 3, "2026-10-28": 1, "2026-10-29": 2, "2026-10-30": 1, "2026-11-01": 1, "2026-11-02": 1, "2026-11-03": 1, "2026-11-04": 2, "2026-11-05": 4, "2026-11-06": 2, "2026-11-09": 2, "2026-11-10": 2, "2026-11-11": 2, "2026-11-12": 1, "2026-11-16": 2, "2026-11-17": 2, "2026-11-18": 2, "2026-11-19": 1, "2026-11-21": 3, "2026-11-23": 1, "2026-11-24": 6, "2026-11-25": 2, "2026-11-26": 3, "2026-11-27": 1, "2026-11-29": 4, "2026-11-30": 4, "2026-12-01": 4, "2026-12-02": 1, "2026-12-04": 1, "2026-12-05": 2, "2026-12-07": 1, "2026-12-11": 1, "2026-12-14": 2, "2026-12-15": 1, "2026-12-16": 3, "2026-12-17": 2, "2026-12-18": 2, "2026-12-21": 3, "2026-12-22": 6, "2026-12-26": 6, "2026-12-28": 4, "2026-12-29": 1, "2026-12-30": 1, "2026-12-31": 1}, "hours": [20, 14, 4, 2, 2, 0, 0, 11, 21, 35, 68, 48, 27, 39, 52, 57, 39, 42, 16, 24, 30, 25, 31, 29], "weekdays": [113, 102, 108, 96, 102, 45, 70], "months": [59, 48, 48, 75, 47, 40, 51, 57, 62, 58, 49, 42], "langs": [{"name": "Python", "lines": 36012, "pct": 28.5, "color": "#3B82F6"}, {"name": "Dart", "lines": 20284, "pct": 16.1, "color": "#00B4AB"}, {"name": "TypeScript", "lines": 17782, "pct": 14.1, "color": "#3178C6"}, {"name": "SQL", "lines": 8996, "pct": 7.1, "color": "#E38C00"}, {"name": "Kotlin", "lines": 8354, "pct": 6.6, "color": "#A97BFF"}, {"name": "CSS", "lines": 7875, "pct": 6.2, "color": "#A855F7"}], "repos": [{"name": "api-pagamentos", "commits": 219, "added": 32114, "removed": 12894}, {"name": "app-entregas", "commits": 151, "added": 19992, "removed": 8646}, {"name": "painel-admin", "commits": 113, "added": 15437, "removed": 6834}, {"name": "cli-deploy", "commits": 60, "added": 8521, "removed": 3147}, {"name": "site-institucional", "commits": 59, "added": 8016, "removed": 3463}, {"name": "dotfiles", "commits": 34, "added": 5216, "removed": 2091}], "streak": {"length": 15, "start": "2026-04-03", "end": "2026-04-17"}, "busiest": {"date": "2026-12-26", "commits": 6}, "night": {"time": "04:52", "date": "2026-09-12", "message": "hotfix: produção caiu, não me pergunte", "repo": "api-pagamentos"}, "biggest": {"lines": 492, "message": "feat: modo escuro", "repo": "site-institucional", "date": "2026-04-12"}, "words": [["pedidos", 63], ["corrige", 60], ["código", 58], ["tela", 57], ["deploy", 41], ["automático", 41], ["main", 41], ["botão", 39]], "fix_pct": 33, "persona": "polyglot", "persona_value": 6, "weekend_pct": 18, "lang": "pt", "prev": {"year": 2025, "commits": 509, "active_days": 180, "added": 70255, "streak": 10, "top_lang": "Python"}};
 const L = D.lang === 'pt' ? 'pt' : 'en';
@@ -166,6 +182,13 @@ const T = {
     swapped: (a, b) => `Você trocou <b>${a}</b> por <b>${b}</b>.`, kept: a => `<b>${a}</b> segue no topo.`, vsShort: y => `vs ${y}`,
     summary: y => `Meu ${y} no git`, s_commits: 'commits', s_repos: 'repositórios', s_days: 'dias ativos', s_streak: 'dias seguidos',
     s_added: 'linhas escritas', s_lang: 'linguagem do ano', download: 'Baixar imagem', again: 'Ver de novo', share: 'Postar no Instagram',
+    makeVideo: 'Criar vídeo para os stories', videoHint: 'Um vídeo de 13 segundos no tamanho de story. No Instagram dá para pôr música por cima.',
+    recording: 'Gravando o seu vídeo…', keepOpen: 'Deixe esta aba aberta até terminar.', ready: 'Pronto!',
+    postVideo: 'Postar no Instagram', downloadVideo: 'Baixar vídeo', close: 'Fechar',
+    musicTip: 'Dica: nos stories, toque no ícone de música para pôr uma trilha.',
+    webmNote: 'Este navegador grava em WebM, que o Instagram não aceita. No Chrome ou Safari atualizados o vídeo sai em MP4. Ou use a imagem.',
+    noVideo: 'Este navegador não grava vídeo. A imagem funciona em qualquer lugar.',
+    vYear: 'Seu ano no git.', streakLine: n => `maior sequência: ${n} ${n === 1 ? 'dia' : 'dias'}`,
     shareHint: 'Para postar no Instagram: baixe a imagem e mande para o celular, ou abra este arquivo no celular e use o botão de compartilhar.',
     shareText: y => `Meu ${y} no git. Gere o seu: github.com/Ryuks-py/git-retro`, made: 'gerado localmente com git-retro · nada saiu do seu computador',
     cardTitle: y => `MEU ${y} NO GIT`, cardFoot: 'git-retro', peakK: 'horário de pico', langsK: 'linguagens', cardCommits: 'commits',
@@ -203,6 +226,13 @@ const T = {
     swapped: (a, b) => `You swapped <b>${a}</b> for <b>${b}</b>.`, kept: a => `<b>${a}</b> is still on top.`, vsShort: y => `vs ${y}`,
     summary: y => `My ${y} in git`, s_commits: 'commits', s_repos: 'repositories', s_days: 'active days', s_streak: 'day streak',
     s_added: 'lines written', s_lang: 'language of the year', download: 'Download image', again: 'Watch again', share: 'Share to Instagram',
+    makeVideo: 'Make a video for stories', videoHint: 'A 13-second video in story size. Add music on top in Instagram.',
+    recording: 'Recording your video…', keepOpen: 'Keep this tab open until it finishes.', ready: 'Done!',
+    postVideo: 'Share to Instagram', downloadVideo: 'Download video', close: 'Close',
+    musicTip: 'Tip: in stories, tap the music icon to add a soundtrack.',
+    webmNote: 'This browser records WebM, which Instagram doesn’t accept. Recent Chrome or Safari record MP4. Or use the image.',
+    noVideo: 'This browser can’t record video. The image works everywhere.',
+    vYear: 'Your year in git.', streakLine: n => `longest streak: ${n} ${n === 1 ? 'day' : 'days'}`,
     shareHint: 'To post on Instagram: download the image and send it to your phone, or open this file on your phone and use the share button.',
     shareText: y => `My ${y} in git. Make yours: github.com/Ryuks-py/git-retro`, made: 'generated locally with git-retro · nothing left your computer',
     cardTitle: y => `MY ${y} IN GIT`, cardFoot: 'git-retro', peakK: 'peak hour', langsK: 'languages', cardCommits: 'commits',
@@ -330,7 +360,6 @@ if (D.biggest && D.biggest.lines) S.push({ th: 'orange', html: `${rv(`<div class
   ${rv(`<div class="h">${esc(T.blines)}</div>`, .3)}${D.biggest.message ? rv(`<p class="q">${esc(D.biggest.message)}</p>`, .6) : ''}${rv(`<div class="meta">${esc(T.at(fd(D.biggest.date), D.biggest.repo))}</div>`, .8)}` });
 
 const topLang = D.langs[0] ? D.langs[0].name : '—';
-const CAN_SHARE = (() => { try { return !!(navigator.canShare && navigator.canShare({ files: [new File(['x'], 'x.png', { type: 'image/png' })] })); } catch (e) { return false; } })();
 const delta = (now, before) => { if (!before) return null; const p = Math.round((now - before) * 100 / before); return { p, txt: (p > 0 ? '+' : p < 0 ? '−' : '±') + Math.abs(p) + '%' }; };
 const P = D.prev;
 if (P && P.commits >= 10) {
@@ -344,9 +373,8 @@ S.push({ th: 'ink', last: true, cls: 'summary', html: `${rv(`<div class="h">${es
   <div class="grid">${[[nf(tot.commits), T.s_commits], [nf(tot.repos), T.s_repos], [nf(tot.active_days), T.s_days], [nf(D.streak.length), T.s_streak], [nf(tot.added), T.s_added], [topLang, T.s_lang]]
     .map(([v, k], i) => `<div class="pop" style="--d:${.15 + i * .07}s"><b style="--fs:${34 / (String(v).length * .6)}cqw">${esc(v)}</b><span>${esc(k)}</span></div>`).join('')}</div>
   ${rv(`<p class="p"><b>${icon(D.persona, 'sm')}${esc(pc[0])}</b></p>`, .7)}<div class="sp"></div>
-  ${rv(`<div class="acts">${CAN_SHARE ? `<button class="btn" id="sh">${esc(T.share)}</button><button class="btn g" id="dl">${esc(T.download)}</button>`
-      : `<button class="btn" id="dl">${esc(T.download)}</button><button class="btn g" id="again">${esc(T.again)}</button>`}</div>`, .9)}
-  ${CAN_SHARE ? '' : rv(`<p class="hint">${esc(T.shareHint)}</p>`, 1)}
+  ${rv(`<div class="acts"><button class="btn" id="mvbtn">${esc(T.makeVideo)}</button><button class="btn g" id="again">${esc(T.again)}</button></div>`, .9)}
+  ${rv(`<p class="hint">${esc(T.videoHint)}</p>`, 1)}
   ${rv(`<div class="meta" style="font-size:2.8cqw">${esc(T.made)}</div>`, 1.1)}` });
 
 /* ---------- motor dos stories ---------- */
@@ -374,7 +402,7 @@ function go(i) {
   segs.forEach((g, k) => { g.classList.toggle('done', k < i); g.firstChild.style.transform = k < i ? 'scaleX(1)' : 'scaleX(0)'; });
   $('#tap').style.display = S[i].last ? 'none' : '';
   cur = i; elapsed = 0; t0 = performance.now(); countUps(s);
-  if (S[i].last) setTimeout(() => makeCard().catch(() => {}), 1200);
+  if (S[i].last) setTimeout(() => prepare().catch(() => {}), 800);
 }
 function loop(now) {
   if (!paused && !held && !S[cur].last && !document.hidden) {
@@ -401,116 +429,327 @@ addEventListener('keydown', e => {
 let sx = 0;
 $('#stage').addEventListener('touchstart', e => { sx = e.touches[0].clientX; }, { passive: true });
 $('#stage').addEventListener('touchend', e => { const dx = e.changedTouches[0].clientX - sx; if (Math.abs(dx) > 60) go(cur + (dx < 0 ? 1 : -1)); }, { passive: true });
-$('#again') && $('#again').addEventListener('click', () => { cur = -1; go(0); });
-$('#dl').addEventListener('click', () => saveCard());
-$('#sh') && $('#sh').addEventListener('click', () => shareCard());
-go(0); raf = requestAnimationFrame(loop);
+$('#again').addEventListener('click', () => { cur = -1; go(0); });
+$('#mvbtn').addEventListener('click', () => openMotion());
 
-/* ---------- cartão para compartilhar (1080×1920) ---------- */
+/* ---------- vídeo para os stories (1080×1920): seis cenas que contam o ano ---------- */
+const VW = 1080, VH = 1920, VX = 84, VCW = VW - 2 * VX;
+const COL = { ink: '#0E0E11', paper: '#F4F0E6', lime: '#C6FF3D', blue: '#1E3BFF', pink: '#FF8AD0' };
+const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
+const eo = t => 1 - Math.pow(1 - clamp(t), 4);
+const eb = t => { t = clamp(t); return 1 + 2.70158 * Math.pow(t - 1, 3) + 1.70158 * Math.pow(t - 1, 2); };
+const eio = t => { t = clamp(t); return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; };
+const plain = s => String(s).replace(/<[^>]+>/g, '');
+const CSS = getComputedStyle(document.documentElement), SANS = CSS.getPropertyValue('--sans'), MONO = CSS.getPropertyValue('--mono');
+let c = null, iconImg = null, prepared = null;
+
+const font = (w, px, f = SANS) => { c.font = `${w} ${px}px ${f}`; };
+const fit = (txt, w, px, maxW, f = SANS) => { let s = px; font(w, s, f); while (c.measureText(txt).width > maxW && s > 16) { s -= 2; font(w, s, f); } return s; };
+const track = px => { try { c.letterSpacing = px + 'px'; } catch (e) {} };
+const rr = (x, y, w, h, r) => { c.beginPath(); c.roundRect(x, y, w, h, r); };
+const enter = (p, dy, fn) => { if (p <= 0) return; c.save(); c.globalAlpha *= clamp(p); c.translate(0, (1 - eo(p)) * dy); fn(); c.restore(); };
+function wrap(txt, x, y, maxW, lh) {
+  let line = '';
+  for (const w of String(txt).split(' ')) { const t = line ? line + ' ' + w : w; if (c.measureText(t).width > maxW && line) { c.fillText(line, x, y); y += lh; line = w; } else line = t; }
+  if (line) c.fillText(line, x, y);
+  return y;
+}
+function glow(color, x, y, r, a) { const g = c.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, color.replace(')', `,${a})`).replace('rgb', 'rgba')); g.addColorStop(1, color.replace(')', ',0)').replace('rgb', 'rgba')); c.fillStyle = g; c.fillRect(0, 0, VW, VH); }
+
+// células do calendário, calculadas uma vez
+const CAL = (() => {
+  const y = D.year, start = new Date(y, 0, 1), off = (start.getDay() + 6) % 7, max = Math.max(1, ...Object.values(D.days)), out = [];
+  for (let d = new Date(start); d.getFullYear() === y; d.setDate(d.getDate() + 1)) {
+    const doy = Math.round((d - start) / 864e5), wk = Math.floor((doy + off) / 7), row = (d.getDay() + 6) % 7;
+    const iso = `${y}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`, n = D.days[iso] || 0;
+    out.push({ wk, row, part: wk < 27 ? 0 : 1, col: wk < 27 ? wk : wk - 27, lv: n ? Math.ceil(Math.min(1, n / (max * .6)) * 4) : 0 });
+  }
+  return out;
+})();
+const mshort = i => new Date(D.year, i, 1).toLocaleDateString(L === 'pt' ? 'pt-BR' : 'en-US', { month: 'short' }).replace('.', '').toUpperCase();
+function drawCal(y0, lt) {
+  const gap = 6, cs = (VCW - 26 * gap) / 27, half = 7 * (cs + gap) + 40;
+  c.fillStyle = COL.paper; c.globalAlpha = .55 * eo(lt / .4); font(600, 22, MONO); track(2);
+  c.fillText(`${mshort(0)} – ${mshort(5)}`, VX, y0 - 14); c.fillText(`${mshort(6)} – ${mshort(11)}`, VX, y0 + half - 14); track(0); c.globalAlpha = 1;
+  for (const k of CAL) {
+    const p = eb((lt - k.wk * .026 - k.row * .012) / .45); if (p <= 0) continue;
+    const x = VX + k.col * (cs + gap), y = y0 + k.part * half + k.row * (cs + gap), s = cs * p;
+    c.globalAlpha = [.08, .32, .55, .8, 1][k.lv] * clamp(p * 1.5); c.fillStyle = k.lv ? COL.lime : COL.paper;
+    rr(x + (cs - s) / 2, y + (cs - s) / 2, s, s, 6 * p); c.fill();
+  }
+  c.globalAlpha = 1;
+  return y0 + 2 * half;
+}
+const peakH = D.hours.indexOf(Math.max(...D.hours));
+const vsChip = () => { const d = P && P.commits >= 10 ? delta(tot.commits, P.commits) : null; return d && { d, txt: `${d.txt} ${T.vsShort(P.year)}` }; };
+
+const SCENES = [
+  { d: 2.3, bg: COL.ink, draw(lt) {               // o ano
+    glow('rgb(198,255,61)', VW - 60, 160, 900, .2 * eo(lt / .8));
+    enter(lt / .5, 20, () => { c.fillStyle = COL.paper; font(600, 30, MONO); track(4); c.fillText('GIT RETRO', VX, 160);
+      if (D.name) { c.textAlign = 'right'; c.globalAlpha *= .6; c.fillText(String(D.name).toUpperCase().slice(0, 20), VW - VX, 160); c.textAlign = 'left'; } track(0); });
+    const yr = String(D.year); fit(yr, 800, 400, VCW + 40); track(-16);
+    const widths = [...yr].map(ch => c.measureText(ch).width), total = widths.reduce((a, b) => a + b, 0) - 16 * (yr.length - 1);
+    let x = (VW - total) / 2;
+    [...yr].forEach((ch, i) => { const p = eo((lt - .15 - i * .09) / .8); if (p > 0) { c.save(); c.globalAlpha = p; c.fillStyle = COL.lime; c.fillText(ch, x, 1060 + (1 - p) * 260); c.restore(); } x += widths[i] - 16; });
+    track(0);
+    enter((lt - .9) / .6, 50, () => { c.fillStyle = COL.paper; font(500, 58); c.textAlign = 'center'; c.fillText(T.vYear, VW / 2, 1200); c.textAlign = 'left'; });
+  } },
+  { d: 2.5, bg: COL.lime, draw(lt) {              // commits contando
+    c.fillStyle = COL.ink;
+    enter(lt / .5, 50, () => { font(800, 76); c.fillText(T.youmade, VX, 720); });
+    const v = nf(tot.commits * eo((lt - .2) / 1.5)); fit(nf(tot.commits), 800, 470, VCW + 20); track(-18); c.fillText(v, VX - 10, 1150); track(0);
+    enter((lt - .45) / .5, 50, () => { font(800, 116); c.fillText(T.commits, VX, 1290); });
+    const ch = vsChip();
+    if (ch) enter((lt - 1.3) / .5, 30, () => { font(800, 50); const w = c.measureText(ch.txt).width + 60; c.fillStyle = COL.ink; rr(VX, 1350, w, 84, 42); c.fill(); c.fillStyle = COL.lime; c.fillText(ch.txt, VX + 30, 1409); });
+    enter((lt - 1) / .6, 40, () => { c.fillStyle = COL.ink; font(500, 48); wrap(plain(T.across(tot.repos, tot.active_days)), VX, ch ? 1540 : 1420, VCW, 62); });
+  } },
+  { d: 2.7, bg: COL.ink, draw(lt) {               // calendário se acendendo
+    enter(lt / .5, 40, () => { c.fillStyle = COL.paper; font(800, 80); c.fillText(T.yearbyday, VX, 470); });
+    const yb = drawCal(620, lt - .2);
+    const n = nf(tot.active_days * eo((lt - .9) / 1.2));
+    enter((lt - .8) / .5, 50, () => { c.fillStyle = COL.lime; font(800, 230); track(-8); c.fillText(n, VX - 6, yb + 230); track(0);
+      c.fillStyle = COL.paper; font(800, 60); c.fillText(T.s_days, VX, yb + 310);
+      c.globalAlpha *= .7; font(600, 30, MONO); track(2); c.fillText(T.streakLine(D.streak.length).toUpperCase(), VX, yb + 380); track(0); });
+  } },
+  { d: 2.4, bg: COL.blue, draw(lt) {              // relógio crescendo
+    enter(lt / .5, 40, () => { c.fillStyle = '#fff'; font(800, 80); c.fillText(T.clock, VX, 430); });
+    const cx = VW / 2, cy = 960, R0 = 150, R1 = 400, max = Math.max(1, ...D.hours);
+    c.lineCap = 'round'; c.lineWidth = 24;
+    D.hours.forEach((n, h) => {
+      const a = h / 24 * Math.PI * 2 - Math.PI / 2, co = Math.cos(a), si = Math.sin(a), pb = eo((lt - .1 - h * .012) / .5);
+      c.strokeStyle = `rgba(255,255,255,${.14 * pb})`; c.beginPath(); c.moveTo(cx + co * R0, cy + si * R0); c.lineTo(cx + co * R1, cy + si * R1); c.stroke();
+      const p = eo((lt - .3 - h * .035) / .8); if (!n || p <= 0) return;
+      const r = R0 + (R1 - R0) * (n / max) * p; c.strokeStyle = COL.lime; c.beginPath(); c.moveTo(cx + co * R0, cy + si * R0); c.lineTo(cx + co * r, cy + si * r); c.stroke();
+    });
+    c.fillStyle = 'rgba(255,255,255,.75)'; font(600, 30, MONO); c.textAlign = 'center'; c.textBaseline = 'middle';
+    [0, 6, 12, 18].forEach(h => { const a = h / 24 * Math.PI * 2 - Math.PI / 2; c.globalAlpha = eo((lt - .4) / .5); c.fillText(h + 'h', cx + Math.cos(a) * 455, cy + Math.sin(a) * 455); });
+    c.globalAlpha = 1; c.textAlign = 'left'; c.textBaseline = 'alphabetic';
+    enter((lt - 1.1) / .5, 40, () => { c.fillStyle = '#fff'; font(800, 70); c.fillText(plain(T.peak(peakH)), VX, 1620); });
+  } },
+  { d: 2.6, bg: COL.pink, draw(lt) {              // personalidade
+    c.fillStyle = COL.ink;
+    enter(lt / .4, 20, () => { c.globalAlpha *= .7; font(600, 32, MONO); track(5); c.textAlign = 'center'; c.fillText(T.youare.toUpperCase(), VW / 2, 520); c.textAlign = 'left'; track(0); });
+    const s = eb((lt - .15) / .7);
+    if (s > 0 && iconImg) { const z = 380 * s; c.save(); c.globalAlpha = clamp(s * 2); c.drawImage(iconImg, VW / 2 - z / 2, 860 - z / 2, z, z); c.restore(); }
+    const name = pc[0], fs = fit(name, 800, 140, VCW);
+    const ws = [...name].map(ch => c.measureText(ch).width), total = ws.reduce((a, b) => a + b, 0);
+    let x = (VW - total) / 2;
+    [...name].forEach((ch, i) => { const p = eo((lt - .55 - i * .035) / .6); if (p > 0) { c.save(); c.globalAlpha = p; font(800, fs); c.fillText(ch, x, 1240 + (1 - p) * 90); c.restore(); } x += ws[i]; });
+    enter((lt - 1.1) / .6, 40, () => { font(500, 46); c.textAlign = 'center'; wrap(plain(pc[1](D.persona_value)), VW / 2, 1360, VCW - 40, 62); c.textAlign = 'left'; });
+  } },
+  { d: 3.8, bg: COL.ink, draw(lt) {               // o cartão se monta e fica
+    const b = i => (lt - .1 - i * .11) / .55;
+    glow('rgb(198,255,61)', VW - 80, 120, 760, .22 * eo(lt / .8));
+    enter(b(0), 40, () => { c.fillStyle = COL.paper; font(600, 30, MONO); track(3); c.fillText(T.cardTitle(D.year), VX, 132);
+      if (D.name) { c.textAlign = 'right'; c.globalAlpha *= .6; c.fillText(String(D.name).toUpperCase().slice(0, 22), VW - VX, 132); c.textAlign = 'left'; } track(0); });
+    enter(b(1), 70, () => { const num = nf(tot.commits); c.fillStyle = COL.lime; track(-14); fit(num, 800, 330, VCW); c.fillText(num, VX - 8, 440); track(0); });
+    enter(b(2), 50, () => {
+      c.fillStyle = COL.paper; font(800, 64); c.fillText(T.cardCommits, VX, 530);
+      const ch = vsChip(); if (!ch) return;
+      const x1 = VX + c.measureText(T.cardCommits).width + 28; font(800, 40); const w = c.measureText(ch.txt).width + 48, up = ch.d.p >= 0;
+      c.fillStyle = COL.lime; c.strokeStyle = COL.lime; c.lineWidth = 3; rr(x1, 478, w, 66, 33); up ? c.fill() : c.stroke();
+      c.fillStyle = up ? COL.ink : COL.lime; c.fillText(ch.txt, x1 + 24, 524);
+    });
+    let y = drawCal(620, lt - .35) + 40;
+    const cells = [[nf(tot.active_days), T.s_days], [nf(D.streak.length), T.s_streak], [L === 'pt' ? `${peakH}h` : `${peakH}:00`, T.peakK]], bw = (VCW - 48) / 3;
+    cells.forEach(([v, k], i) => enter(b(4 + i * .5), 50, () => {
+      const x = VX + i * (bw + 24);
+      c.strokeStyle = 'rgba(244,240,230,.2)'; c.lineWidth = 2; rr(x, y, bw, 170, 26); c.stroke();
+      c.fillStyle = COL.paper; fit(v, 800, 88, bw - 56); c.fillText(v, x + 28, y + 98);
+      c.globalAlpha *= .6; font(600, 22, MONO); track(2); c.fillText(k.toUpperCase(), x + 28, y + 140); track(0);
+    }));
+    y += 230;
+    const lt5 = D.langs.slice(0, 5), lsum = lt5.reduce((a, l) => a + l.lines, 0) || 1;
+    enter(b(6), 40, () => {
+      c.fillStyle = COL.paper; c.globalAlpha *= .6; font(600, 22, MONO); track(2); c.fillText(T.langsK.toUpperCase(), VX, y); track(0); c.globalAlpha /= .6;
+      const grow = eo((lt - .9) / .9); c.save(); rr(VX, y + 26, VCW * grow, 34, 17); c.clip();
+      let x = VX; lt5.forEach(l => { const w = VCW * l.lines / lsum; c.fillStyle = l.color; c.fillRect(x, y + 26, w + 1, 34); x += w; }); c.restore();
+      x = VX; lt5.slice(0, 3).forEach(l => { c.fillStyle = l.color; c.beginPath(); c.arc(x + 11, y + 110 - 13, 11, 0, 7); c.fill();
+        c.fillStyle = COL.paper; font(800, 36); const tx = `${l.name} ${Math.round(l.pct)}%`; c.fillText(tx, x + 32, y + 110); x += c.measureText(tx).width + 80; });
+    });
+    y += 162;
+    const ph = Math.max(170, VH - 150 - y);
+    enter(b(7), 80, () => {
+      c.fillStyle = COL.pink; rr(VX, y, VCW, ph, 40); c.fill();
+      c.fillStyle = COL.ink;
+      if (iconImg) { const s = eb((lt - 1.2) / .6) * 104; c.drawImage(iconImg, VX + 52 + 52 - s / 2, y + ph / 2 - s / 2, s, s); }
+      fit(pc[0], 800, 80, VCW - 230); c.fillText(pc[0], VX + 186, y + ph / 2 + 28);
+    });
+    enter(b(8), 20, () => { c.fillStyle = COL.paper; c.globalAlpha *= .45; font(600, 24, MONO); c.fillText('github.com/Ryuks-py/git-retro', VX, VH - 70); });
+  } },
+];
+const TR = .5, STARTS = []; { let a = 0; SCENES.forEach(s => { STARTS.push(a); a += s.d - TR; }); }
+const TOTAL = STARTS[STARTS.length - 1] + SCENES[SCENES.length - 1].d;
+function scene(i, lt) { c.fillStyle = SCENES[i].bg; c.fillRect(0, 0, VW, VH); SCENES[i].draw(lt); }
+function frame(ctx, t) {
+  c = ctx; c.textAlign = 'left'; c.textBaseline = 'alphabetic'; c.globalAlpha = 1; track(0);
+  let i = 0; while (i + 1 < SCENES.length && t >= STARTS[i + 1]) i++;
+  const into = t - STARTS[i];
+  if (i > 0 && into < TR) {
+    scene(i - 1, t - STARTS[i - 1]);
+    const p = eio(into / TR); c.save(); c.beginPath(); c.arc(VW / 2, VH * .55, p * Math.hypot(VW, VH) * .62 + 1, 0, 7); c.clip(); scene(i, into); c.restore();
+  } else scene(i, into);
+}
+async function prepare() {
+  if (prepared) return prepared;
+  return (prepared = (async () => {
+    try { await Promise.all(['800 100px Retro', '500 40px Retro', '600 30px RetroMono'].map(f => document.fonts.load(f))); } catch (e) {}
+    const svg = icon(D.persona).replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400" ').replaceAll('currentColor', COL.ink);
+    const img = new Image(); img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    try { await img.decode(); iconImg = img; } catch (e) {}
+  })());
+}
+
+/* imagem parada = último quadro do vídeo */
 let cardFile = null;
 async function makeCard() {
   if (cardFile) return cardFile;
-  try { await Promise.all(['800 100px Retro', '500 40px Retro', '600 30px RetroMono'].map(f => document.fonts.load(f))); } catch (e) {}
-  const W = 1080, H = 1920, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
-  const c = cv.getContext('2d'), css = getComputedStyle(document.documentElement);
-  const ink = '#0E0E11', paper = '#F4F0E6', lime = '#C6FF3D', pink = '#FF8AD0';
-  const SANS = css.getPropertyValue('--sans'), MONO = css.getPropertyValue('--mono');
-  const X = 84, CW = W - 2 * X;
-  const font = (w, px, f = SANS) => { c.font = `${w} ${px}px ${f}`; };
-  const fit = (txt, w, px, maxW, f = SANS) => { let s = px; do { font(w, s, f); s -= 2; } while (c.measureText(txt).width > maxW && s > 16); };
-  const track = (txt, px) => { try { c.letterSpacing = px + 'px'; } catch (e) {} };
-  c.fillStyle = ink; c.fillRect(0, 0, W, H);
-
-  // brilho no canto, na cor da página
-  const g = c.createRadialGradient(W - 80, 120, 0, W - 80, 120, 760); g.addColorStop(0, 'rgba(198,255,61,.22)'); g.addColorStop(1, 'rgba(198,255,61,0)');
-  c.fillStyle = g; c.fillRect(0, 0, W, H);
-
-  // topo
-  c.fillStyle = paper; font(600, 30, MONO); track('', 3); c.fillText(T.cardTitle(D.year), X, 132);
-  if (D.name) { c.textAlign = 'right'; c.globalAlpha = .6; c.fillText(String(D.name).toUpperCase().slice(0, 22), W - X, 132); c.globalAlpha = 1; c.textAlign = 'left'; }
-  track('', 0);
-
-  // número principal
-  const num = nf(tot.commits);
-  c.fillStyle = lime; track('', -14); fit(num, 800, 330, CW); c.fillText(num, X - 8, 440); track('', 0);
-  c.fillStyle = paper; font(800, 64); c.fillText(T.cardCommits, X, 530);
-  const dc = P && P.commits >= 10 ? delta(tot.commits, P.commits) : null;
-  if (dc) {
-    const lbl = `${dc.txt} ${T.vsShort(P.year)}`; font(800, 40); const w = c.measureText(lbl).width + 48;
-    font(800, 64); const x1 = X + c.measureText(T.cardCommits).width + 28;
-    c.fillStyle = dc.p >= 0 ? lime : 'transparent'; c.strokeStyle = lime; c.lineWidth = 3;
-    c.beginPath(); c.roundRect(x1, 478, w, 66, 33); dc.p >= 0 ? c.fill() : c.stroke();
-    c.fillStyle = dc.p >= 0 ? ink : lime; font(800, 40); c.fillText(lbl, x1 + 24, 524);
-  }
-
-  // calendário do ano em duas metades
-  const y0 = 620, cols = 27, gap = 6, cs = (CW - (cols - 1) * gap) / cols, maxd = Math.max(1, ...Object.values(D.days));
-  const start = new Date(D.year, 0, 1), off = (start.getDay() + 6) % 7;
-  c.globalAlpha = .55; c.fillStyle = paper; font(600, 22, MONO);
-  const mshort = i => new Date(D.year, i, 1).toLocaleDateString(L === 'pt' ? 'pt-BR' : 'en-US', { month: 'short' }).replace('.', '').toUpperCase();
-  c.fillText(`${mshort(0)} – ${mshort(5)}`, X, y0 - 14); c.fillText(`${mshort(6)} – ${mshort(11)}`, X, y0 + 7 * (cs + gap) + 40 - 14); c.globalAlpha = 1;
-  for (let d = new Date(start); d.getFullYear() === D.year; d.setDate(d.getDate() + 1)) {
-    const doy = Math.round((d - start) / 864e5), wk = Math.floor((doy + off) / 7), row = (d.getDay() + 6) % 7, part = wk < cols ? 0 : 1, col = wk - part * cols;
-    const iso = `${D.year}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`, n = D.days[iso] || 0;
-    const lv = n ? Math.ceil(Math.min(1, n / (maxd * .6)) * 4) : 0;
-    c.fillStyle = lv ? lime : paper; c.globalAlpha = [.08, .32, .55, .8, 1][lv];
-    c.beginPath(); c.roundRect(X + col * (cs + gap), y0 + part * (7 * (cs + gap) + 40) + row * (cs + gap), cs, cs, 6); c.fill();
-  }
-  c.globalAlpha = 1;
-  let y = y0 + 2 * 7 * (cs + gap) + 40 + 40;
-
-  // três números
-  const peakH = D.hours.indexOf(Math.max(...D.hours));
-  const cells = [[nf(tot.active_days), T.s_days], [nf(D.streak.length), T.s_streak], [L === 'pt' ? `${peakH}h` : `${peakH}:00`, T.peakK]];
-  const bw = (CW - 2 * 24) / 3;
-  cells.forEach(([v, k], i) => {
-    const x = X + i * (bw + 24);
-    c.strokeStyle = 'rgba(244,240,230,.2)'; c.lineWidth = 2; c.beginPath(); c.roundRect(x, y, bw, 170, 26); c.stroke();
-    c.fillStyle = paper; fit(v, 800, 88, bw - 56); c.fillText(v, x + 28, y + 98);
-    c.globalAlpha = .6; font(600, 22, MONO); track('', 2); c.fillText(k.toUpperCase(), x + 28, y + 140); track('', 0); c.globalAlpha = 1;
-  });
-  y += 170 + 60;
-
-  // linguagens: uma barra só, empilhada
-  const lt = D.langs.slice(0, 5), lsum = lt.reduce((a, l) => a + l.lines, 0) || 1;
-  c.globalAlpha = .6; c.fillStyle = paper; font(600, 22, MONO); track('', 2); c.fillText(T.langsK.toUpperCase(), X, y); track('', 0); c.globalAlpha = 1;
-  y += 26; let x = X;
-  c.save(); c.beginPath(); c.roundRect(X, y, CW, 34, 17); c.clip();
-  lt.forEach(l => { const w = CW * l.lines / lsum; c.fillStyle = l.color; c.fillRect(x, y, w + 1, 34); x += w; });
-  c.restore();
-  y += 34 + 50; x = X;
-  lt.slice(0, 3).forEach(l => {
-    c.fillStyle = l.color; c.beginPath(); c.arc(x + 11, y - 13, 11, 0, 7); c.fill();
-    c.fillStyle = paper; font(800, 36); const tx = `${l.name} ${Math.round(l.pct)}%`; c.fillText(tx, x + 32, y); x += c.measureText(tx).width + 80;
-  });
-  y += 52;
-
-  // personalidade: ocupa o que sobra até o rodapé
-  const ph = Math.max(170, H - 150 - y);
-  c.fillStyle = pink; c.beginPath(); c.roundRect(X, y, CW, ph, 40); c.fill();
-  c.fillStyle = ink; c.globalAlpha = .7; font(600, 24, MONO); track('', 3); c.fillText(T.youare.toUpperCase(), X + 48, y + 66); track('', 0); c.globalAlpha = 1;
-  const svg = icon(D.persona).replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" ').replaceAll('currentColor', ink);
-  const img = new Image(); img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
-  try { await img.decode(); c.drawImage(img, X + 48, y + ph / 2 - 52, 112, 112); } catch (e) {}
-  fit(pc[0], 800, 76, CW - 240); c.fillText(pc[0], X + 196, y + ph / 2 + 50);
-
-  // rodapé
-  c.fillStyle = paper; c.globalAlpha = .45; font(600, 24, MONO); c.fillText('github.com/Ryuks-py/git-retro', X, H - 70); c.globalAlpha = 1;
-
+  await prepare();
+  const cv = document.createElement('canvas'); cv.width = VW; cv.height = VH; frame(cv.getContext('2d'), TOTAL);
   const b = await new Promise(r => cv.toBlob(r, 'image/png'));
   return (cardFile = new File([b], `git-retro-${D.year}.png`, { type: 'image/png' }));
 }
-async function saveCard() {
-  const f = await makeCard(), a = document.createElement('a');
-  a.href = URL.createObjectURL(f); a.download = f.name; document.body.append(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+function saveFile(f) {
+  const a = document.createElement('a'); a.href = URL.createObjectURL(f); a.download = f.name; document.body.append(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 4000);
 }
-async function shareCard() {
-  const f = await makeCard();
+async function shareFile(f) {
   // no celular abre a folha de compartilhar do sistema: Instagram (stories, feed, direct), WhatsApp, LinkedIn…
   try { await navigator.share({ files: [f], text: T.shareText(D.year) }); }
-  catch (e) { if (e && e.name !== 'AbortError') saveCard(); }
+  catch (e) { if (e && e.name !== 'AbortError') saveFile(f); }
 }
+const canShareFile = f => { try { return !!(navigator.canShare && navigator.canShare({ files: [f] })); } catch (e) { return false; } };
+
+/* ---------- MP4 de verdade: H.264 pelo WebCodecs e um muxer mínimo (moov no início, sem fragmentos) ---------- */
+const FPS = 30;
+function mp4Mux(samples, avcC, w, h) {
+  const u32 = n => [(n >>> 24) & 255, (n >>> 16) & 255, (n >>> 8) & 255, n & 255], u16 = n => [(n >> 8) & 255, n & 255];
+  const str = s => [...s].map(ch => ch.charCodeAt(0));
+  const box = (type, ...parts) => { const body = parts.flat(Infinity), out = new Uint8Array(8 + body.length); out.set(u32(8 + body.length)); out.set(str(type), 4); out.set(body, 8); return [...out]; };
+  const full = (type, v, flags, ...parts) => box(type, [v, (flags >> 16) & 255, (flags >> 8) & 255, flags & 255], ...parts);
+  const matrix = [0x00010000, 0, 0, 0, 0x00010000, 0, 0, 0, 0x40000000].map(u32);
+  const n = samples.length, TS = FPS * 1000, durTS = n * 1000, durMs = Math.round(n * 1000 / FPS);
+  const moov = off => box('moov',
+    full('mvhd', 0, 0, u32(0), u32(0), u32(1000), u32(durMs), u32(0x00010000), u16(0x0100), Array(10).fill(0), matrix, Array(24).fill(0), u32(2)),
+    box('trak',
+      full('tkhd', 0, 3, u32(0), u32(0), u32(1), u32(0), u32(durMs), Array(8).fill(0), u16(0), u16(0), u16(0), u16(0), matrix, u32(w << 16), u32(h << 16)),
+      box('mdia',
+        full('mdhd', 0, 0, u32(0), u32(0), u32(TS), u32(durTS), u16(0x55C4), u16(0)),
+        full('hdlr', 0, 0, u32(0), str('vide'), Array(12).fill(0), str('VideoHandler'), 0),
+        box('minf',
+          full('vmhd', 0, 1, Array(8).fill(0)),
+          box('dinf', full('dref', 0, 0, u32(1), full('url ', 0, 1))),
+          box('stbl',
+            full('stsd', 0, 0, u32(1), box('avc1', Array(6).fill(0), u16(1), Array(16).fill(0), u16(w), u16(h), u32(0x00480000), u32(0x00480000), u32(0), u16(1), Array(32).fill(0), u16(0x18), u16(0xFFFF), box('avcC', [...avcC]))),
+            full('stts', 0, 0, u32(1), u32(n), u32(1000)),
+            full('stss', 0, 0, u32(samples.filter(s => s.key).length), samples.map((s, i) => s.key ? u32(i + 1) : []).flat()),
+            full('stsc', 0, 0, u32(1), u32(1), u32(n), u32(1)),
+            full('stsz', 0, 0, u32(0), u32(n), samples.map(s => u32(s.data.length)).flat()),
+            full('stco', 0, 0, u32(1), u32(off)))))));
+  const ftyp = box('ftyp', str('isom'), u32(512), str('isom'), str('iso2'), str('avc1'), str('mp41'));
+  const moovLen = moov(0).length, dataLen = samples.reduce((a, s) => a + s.data.length, 0);
+  const head = new Uint8Array([...ftyp, ...moov(ftyp.length + moovLen + 8), ...u32(8 + dataLen), ...str('mdat')]);
+  const out = new Uint8Array(head.length + dataLen); out.set(head);
+  let o = head.length; for (const s of samples) { out.set(s.data, o); o += s.data.length; }
+  return out;
+}
+async function encodeMp4(cv, onProgress) {
+  if (!window.VideoEncoder || !window.VideoFrame) return null;
+  const cfg = { codec: 'avc1.640028', width: VW, height: VH, bitrate: 9e6, framerate: FPS, avc: { format: 'avc' } };
+  for (const codec of ['avc1.640028', 'avc1.4d0028', 'avc1.42e028']) {
+    cfg.codec = codec;
+    try { if ((await VideoEncoder.isConfigSupported(cfg)).supported) break; } catch (e) {}
+    if (codec === 'avc1.42e028') return null;
+  }
+  const samples = []; let avcC = null, err = null, lastTs = -1, reordered = false;
+  const enc = new VideoEncoder({
+    output: (chunk, meta) => {
+      if (meta && meta.decoderConfig && meta.decoderConfig.description) avcC = new Uint8Array(meta.decoderConfig.description);
+      if (chunk.timestamp < lastTs) reordered = true; lastTs = chunk.timestamp;
+      const data = new Uint8Array(chunk.byteLength); chunk.copyTo(data); samples.push({ data, key: chunk.type === 'key' });
+    },
+    error: e => { err = e; },
+  });
+  enc.configure(cfg);
+  const ctx = cv.getContext('2d'), N = Math.ceil((TOTAL + .6) * FPS);
+  for (let k = 0; k < N; k++) {
+    if (err || !recording) break;
+    frame(ctx, Math.min(k / FPS, TOTAL));
+    const vf = new VideoFrame(cv, { timestamp: Math.round(k * 1e6 / FPS), duration: Math.round(1e6 / FPS) });
+    enc.encode(vf, { keyFrame: k % (FPS * 2) === 0 }); vf.close();
+    onProgress((k + 1) / N);
+    if (enc.encodeQueueSize > 6 || k % 6 === 0) await new Promise(r => setTimeout(r, 0));
+  }
+  await enc.flush(); enc.close();
+  if (err || !recording || !avcC || reordered || samples.length < N) return null;
+  return new File([mp4Mux(samples, avcC, VW, VH)], `git-retro-${D.year}.mp4`, { type: 'video/mp4' });
+}
+
+/* ---------- janela do vídeo ---------- */
+let mvLoop = 0, videoFile = null, recording = false;
+function mvButtons(list) {
+  const box = $('#mva'); box.innerHTML = '';
+  list.forEach(([label, fn, ghost]) => { const b = document.createElement('button'); b.className = 'btn' + (ghost ? ' g' : ''); b.textContent = label; b.onclick = fn; box.append(b); });
+}
+function preview(cv) {
+  const ctx = cv.getContext('2d'), st = performance.now();
+  cancelAnimationFrame(mvLoop);
+  const step = now => { frame(ctx, ((now - st) / 1000) % (TOTAL + 1.2)); mvLoop = requestAnimationFrame(step); };
+  mvLoop = requestAnimationFrame(step);
+}
+function finished(note) {
+  $('#mvt').textContent = T.ready; $('#mvp').style.transform = 'scaleX(1)'; $('#mvs').textContent = note || T.musicTip;
+  const acts = [];
+  if (videoFile && canShareFile(videoFile)) acts.push([T.postVideo, () => shareFile(videoFile)]);
+  if (videoFile) acts.push([T.downloadVideo, () => saveFile(videoFile), acts.length > 0]);
+  acts.push([T.download, async () => { const f = await makeCard(); canShareFile(f) && matchMedia('(pointer:coarse)').matches ? shareFile(f) : saveFile(f); }, true]);
+  acts.push([T.close, closeMotion, true]);
+  mvButtons(acts);
+}
+async function openMotion() {
+  held = true; $('#mv').hidden = false; document.body.style.overflow = 'hidden';
+  const cv = $('#mvc');
+  if (videoFile) { preview(cv); finished(); return; }
+  $('#mvt').textContent = T.recording; $('#mvs').textContent = T.keepOpen; $('#mvp').style.transform = 'scaleX(0)';
+  mvButtons([[T.close, closeMotion, true]]);
+  await prepare();
+  recording = true;
+  const mp4 = await encodeMp4(cv, k => { $('#mvp').style.transform = `scaleX(${k})`; }).catch(() => null);
+  if (!recording) return;
+  if (mp4) { recording = false; videoFile = mp4; preview(cv); finished(); return; }
+  // sem WebCodecs: grava em tempo real com o MediaRecorder
+  const types = ['video/mp4;codecs=avc1.640028', 'video/mp4;codecs=avc1.42E01F', 'video/mp4', 'video/webm;codecs=vp9', 'video/webm;codecs=vp8', 'video/webm'];
+  const mime = window.MediaRecorder && cv.captureStream ? types.find(t => MediaRecorder.isTypeSupported(t)) : null;
+  if (!mime) { preview(cv); finished(T.noVideo); return; }
+  const ctx = cv.getContext('2d'), stream = cv.captureStream(30);
+  const rec = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 12e6 }), chunks = [];
+  rec.ondataavailable = e => { if (e.data && e.data.size) chunks.push(e.data); };
+  const stopped = new Promise(r => { rec.onstop = r; });
+  recording = true; frame(ctx, 0); rec.start(250);
+  const st = performance.now();
+  await new Promise(res => {
+    const step = now => {
+      if (!recording) return res();
+      const t = (now - st) / 1000; frame(ctx, Math.min(t, TOTAL));
+      $('#mvp').style.transform = `scaleX(${clamp(t / (TOTAL + .4))})`;
+      if (t < TOTAL + .4) mvLoop = requestAnimationFrame(step); else res();
+    };
+    mvLoop = requestAnimationFrame(step);
+  });
+  const cancelled = !recording; recording = false;
+  rec.stop(); await stopped; stream.getTracks().forEach(t => t.stop());
+  if (cancelled) return;
+  const type = mime.split(';')[0], ext = type === 'video/mp4' ? 'mp4' : 'webm';
+  videoFile = new File([new Blob(chunks, { type })], `git-retro-${D.year}.${ext}`, { type });
+  preview(cv);
+  finished(ext === 'webm' ? T.webmNote : '');
+}
+function closeMotion() {
+  recording = false; cancelAnimationFrame(mvLoop); $('#mv').hidden = true; document.body.style.overflow = ''; held = false;
+}
+addEventListener('keydown', e => { if (e.key === 'Escape' && !$('#mv').hidden) closeMotion(); });
+go(0); raf = requestAnimationFrame(loop);
 </script>
 </body>
 </html>

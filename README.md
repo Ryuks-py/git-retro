@@ -42,9 +42,11 @@ Python 3.9+ and `git`. No other dependencies.
 | Words of the year | the words you used most in commit messages, and how many commits were fixes |
 | Biggest commit | the largest change you made in one go |
 | Compared to last year | commits, active days, streak and lines vs. the year before, and whether your top language changed |
-| Summary | everything on one card (1080×1920, story size). On your phone, **Share to Instagram** opens the system share sheet with Instagram Stories, Feed, WhatsApp, LinkedIn…; on a computer, **Download image** |
+| Summary | everything on one page, with **Make a video for stories**: a 14-second animated MP4 (1080×1920) that tells your year in six scenes and ends on your card. On a phone, **Share to Instagram** opens the system share sheet (Stories, Feed, WhatsApp, LinkedIn…). The still image is there too. |
 
-![The share card](docs/card.png)
+![The last frame of the video](docs/card.png)
+
+The video is encoded in your browser with WebCodecs and muxed into a regular MP4 (no upload, no ffmpeg). Browsers without WebCodecs fall back to recording in real time.
 
 ### Personas
 
