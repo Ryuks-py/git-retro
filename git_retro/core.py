@@ -48,7 +48,9 @@ SPECIAL_FILES = {"Dockerfile": ("Docker", "#2496ED"), "Makefile": ("Make", "#427
 STOP = set("""a o e é de da do das dos em no na nos nas um uma para pra por com sem que se ao à
 as os mais e ou the a an and or to of in on for with from by at is it this that be as into
 não nao sim mais fix fixes fixed feat chore refactor docs style test tests wip merge update updates updated add
-added adds remove removed""".split())
+added adds remove removed item itens items user users file files code page pages new novo nova novos novas
+ajuste ajustes ajusta ajustar melhoria melhorias melhora versão versao version initial inicial commit
+change changes changed alteração alterações altera small minor some more also now after before when""".split())
 
 _SEP = "\x1e"
 _FS = "\x1f"
@@ -221,6 +223,14 @@ def compute(commits, year, *, show_messages=True, anonymize=False, name=""):
         months[c.when.month - 1] += 1
         pr = per_repo[c.repo]
         pr["commits"] += 1
+        m = re.match(r"^(\w+)(\([^)]*\))?!?:", c.subject)
+        if m:
+            types[m.group(1).lower()] += 1
+        elif re.match(r"(?i)^(fix|corrig|conserta|ajust)", c.subject):
+            types["fix"] += 1
+        for w in re.findall(r"[a-zà-ú]{3,}", c.subject.lower()):
+            if w not in STOP:
+                words[w] += 1
         size = 0
         csize = sum(a + d for a, d, path in c.files if not NOISE.search(path) and not VENDOR.search(path))
         if csize > IMPORT_LINES:
@@ -244,14 +254,6 @@ def compute(commits, year, *, show_messages=True, anonymize=False, name=""):
                 lang_color[lg[0]] = lg[1]
         if biggest is None or size > biggest[0]:
             biggest = (size, c)
-        m = re.match(r"^(\w+)(\([^)]*\))?!?:", c.subject)
-        if m:
-            types[m.group(1).lower()] += 1
-        elif re.match(r"(?i)^(fix|corrig|conserta|ajust)", c.subject):
-            types["fix"] += 1
-        for w in re.findall(r"[a-zà-ú]{3,}", c.subject.lower()):
-            if w not in STOP:
-                words[w] += 1
 
     # sequência de dias seguidos
     ds = sorted(date.fromisoformat(d) for d in days)
@@ -270,28 +272,36 @@ def compute(commits, year, *, show_messages=True, anonymize=False, name=""):
     total = len(commits)
     late = sum(hours[0:5]); evening = sum(hours[18:24]); early = sum(hours[5:9])
     weekend = weekdays[5] + weekdays[6]
-    if late / total >= .12:
-        persona = "owl"
-    elif weekend / total >= .3:
-        persona = "weekend"
-    elif early / total >= .25:
-        persona = "early"
-    elif evening / total >= .35:
-        persona = "night"
-    else:
-        persona = "office"
-
-    ignored_top = None
-    if ignored_dirs:
-        top_path = ignored_dirs.most_common(1)[0][0]
-        repo = next((c.repo for c in commits for f in c.files if f[2].startswith(top_path)), None) \
-            or next((c.repo for c in commits if c.subject.startswith(top_path)), "")
-        ignored_top = (repo, top_path)
+    fix_pct = round(types.get("fix", 0) * 100 / total)
     tot_lang = sum(lang_lines.values()) or 1
+    big_langs = sum(1 for v in lang_lines.values() if v / tot_lang >= .05)
+    top_repo_share = max(v["commits"] for v in per_repo.values()) / total
+    by_day = sorted(days.values(), reverse=True)
+    burst = sum(by_day[:max(1, len(by_day) // 10)]) / total
+    pct = lambda x: round(x * 100 / total)
+    # cada traço vira uma razão "quanto passou do limite"; vence o mais forte, e o expediente comercial
+    # só aparece quando nada se destaca
+    rules = [  # (persona, valor medido / limite, número mostrado)
+        ("owl", late / total / .12, pct(late)),
+        ("weekend", weekend / total / .3, pct(weekend)),
+        ("marathon", best[0] / 21, best[0]),
+        ("cleaner", (removed / added / .6) if added > 1000 else 0, round(removed * 100 / max(added, 1))),
+        ("firefighter", fix_pct / 35, fix_pct),
+        ("polyglot", big_langs / 4, big_langs),
+        ("burst", (burst / .3) if len(days) >= 20 else 0, round(burst * 100)),
+        ("loyal", (top_repo_share / .8) if len(per_repo) > 1 else 0, round(top_repo_share * 100)),
+        ("early", early / total / .25, pct(early)),
+        ("night", evening / total / .35, pct(evening)),
+    ]
+    key, ratio, value = max(rules, key=lambda r: r[1])
+    persona, persona_value = (key, value) if ratio >= 1 else ("office", pct(sum(hours[9:18])))
+
+    ignored_top = ""
+    if ignored_dirs:
+        ignored_top = ignored_dirs.most_common(1)[0][0]
     langs = [{"name": n, "lines": v, "pct": round(v * 100 / tot_lang, 1), "color": lang_color[n]}
              for n, v in lang_lines.most_common(6)]
     repos = sorted(({"name": rname(r), **v} for r, v in per_repo.items()), key=lambda x: -x["commits"])[:6]
-    first, last = commits[0], commits[-1]
 
     return {
         "year": year,
@@ -307,11 +317,19 @@ def compute(commits, year, *, show_messages=True, anonymize=False, name=""):
                             "message": msg(night.subject), "repo": rname(night.repo)},
         "biggest": biggest and biggest[0] and {"lines": biggest[0], "message": msg(biggest[1].subject),
                                                "repo": rname(biggest[1].repo), "date": biggest[1].when.date().isoformat()},
-        "first": {"date": first.when.date().isoformat(), "message": msg(first.subject), "repo": rname(first.repo)},
-        "last": {"date": last.when.date().isoformat(), "message": msg(last.subject), "repo": rname(last.repo)},
         "words": words.most_common(8) if show_messages else [],
-        "ignored": {"lines": ignored, "top": (rname(ignored_top[0]) + " · " + ignored_top[1]) if ignored_top else ""},
-        "fix_pct": round(types.get("fix", 0) * 100 / total),
-        "persona": persona,
+        # fica só no terminal: a página não comenta o que foi tirado da conta
+        "_ignored": {"lines": ignored, "top": ignored_top},
+        "fix_pct": fix_pct,
+        "persona": persona, "persona_value": persona_value,
         "weekend_pct": round(weekend * 100 / total),
     }
+
+
+def summary(data):
+    """O pouco do ano anterior que a comparação usa."""
+    if not data:
+        return None
+    t = data["totals"]
+    return {"year": data["year"], "commits": t["commits"], "active_days": t["active_days"], "added": t["added"],
+            "streak": data["streak"]["length"], "top_lang": data["langs"][0]["name"] if data["langs"] else ""}

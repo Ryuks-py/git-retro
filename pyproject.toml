@@ -28,4 +28,4 @@ git-retro = "git_retro.cli:main"
 packages = ["git_retro"]
 
 [tool.setuptools.package-data]
-git_retro = ["template.html"]
+git_retro = ["template.html", "fonts/*.woff2", "fonts/*.txt"]

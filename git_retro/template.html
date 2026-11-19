@@ -7,11 +7,14 @@
 <title>git retro</title>
 <style>
 /* Formato: stories (9:16) com um slide por estatística, cada um com a sua cor.
-   Sem fontes nem scripts externos: a página abre offline e não chama ninguém. */
+   Fontes embutidas (Bricolage Grotesque e JetBrains Mono, OFL): a página abre offline, igual em qualquer sistema. */
+@font-face{font-family:"Retro";font-weight:800;font-display:block;src:url(data:font/woff2;base64,/*FONT:display-800*/) format("woff2")}
+@font-face{font-family:"Retro";font-weight:500;font-display:block;src:url(data:font/woff2;base64,/*FONT:text-500*/) format("woff2")}
+@font-face{font-family:"RetroMono";font-weight:600;font-display:block;src:url(data:font/woff2;base64,/*FONT:mono-600*/) format("woff2")}
 :root{
   --ink:#0E0E11;--paper:#F4F0E6;--lime:#C6FF3D;--violet:#6C4CF5;--orange:#FF5A1F;--blue:#1E3BFF;--pink:#FF8AD0;
-  --sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-  --mono:ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
+  --sans:"Retro",ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --mono:"RetroMono",ui-monospace,"SF Mono","Cascadia Code",Menlo,Consolas,monospace;
   --ease:cubic-bezier(.16,1,.3,1);
 }
 *{box-sizing:border-box;margin:0;padding:0}
@@ -44,11 +47,17 @@ body{display:grid;place-items:center;user-select:none;-webkit-user-select:none}
 .stage{--fg:var(--paper)}
 
 .k{font:600 3.3cqw/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;opacity:.75}
-.h{font-weight:900;font-size:9.5cqw;line-height:.95;letter-spacing:-.04em}
-.huge{font-weight:900;font-size:27cqw;line-height:.82;letter-spacing:-.06em;color:var(--ac);font-variant-numeric:tabular-nums}
-.big{font-weight:900;font-size:16cqw;line-height:.86;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
+.h{font-weight:800;font-size:9.5cqw;line-height:.95;letter-spacing:-.035em}
+.huge{font-weight:800;font-size:27cqw;line-height:.82;letter-spacing:-.06em;color:var(--ac);font-variant-numeric:tabular-nums}
+.big{font-weight:800;font-size:16cqw;line-height:.86;letter-spacing:-.05em;font-variant-numeric:tabular-nums}
 .p{font-size:4.6cqw;line-height:1.35;font-weight:500;max-width:34ch}
 .p b{font-weight:800}
+.cmp{display:grid;gap:3.2cqw}
+.cmp .r{display:grid;grid-template-columns:1fr auto;align-items:baseline;gap:0 3cqw;border-top:1px solid color-mix(in srgb,var(--fg) 25%,transparent);padding-top:2.6cqw}
+.cmp .l{font:600 3.1cqw/1.2 var(--mono);text-transform:uppercase;letter-spacing:.06em;opacity:.8;grid-column:1/-1}
+.cmp .v{font-weight:800;font-size:10cqw;letter-spacing:-.04em;line-height:1}
+.cmp .d{font-weight:800;font-size:5.4cqw;padding:1.2cqw 2.6cqw;border-radius:99px;background:var(--fg);color:var(--bg)}
+.cmp .d.dn{background:transparent;color:var(--fg);box-shadow:inset 0 0 0 1.5px var(--fg)}
 .q{font-weight:800;font-size:6.4cqw;line-height:1.12;letter-spacing:-.02em}
 .q::before{content:"“"}.q::after{content:"”"}
 .meta{font:500 3.4cqw/1.3 var(--mono);opacity:.7}
@@ -85,7 +94,7 @@ body{display:grid;place-items:center;user-select:none;-webkit-user-select:none}
 .hb .t i{display:block;height:100%;border-radius:inherit;background:var(--c,var(--ac));width:var(--w);transform:scaleX(0);transform-origin:left}
 .on .hb .t i{transition:transform 1.2s var(--ease);transition-delay:var(--d,0s);transform:scaleX(1)}
 .words{display:flex;flex-wrap:wrap;gap:1.6cqw 3cqw;align-items:baseline}
-.words span{font-weight:900;letter-spacing:-.03em;line-height:1}
+.words span{font-weight:800;letter-spacing:-.03em;line-height:1}
 .pm{display:flex;gap:4cqw;align-items:baseline;flex-wrap:wrap}
 .pm .big:last-child{opacity:.55}
 .weeks{display:flex;gap:1.4cqw;align-items:flex-end;height:22cqw}
@@ -98,7 +107,7 @@ body{display:grid;place-items:center;user-select:none;-webkit-user-select:none}
 .summary{gap:2.4cqw;padding-top:17cqw}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:2.4cqw}
 .grid div{border:1px solid color-mix(in srgb,var(--fg) 18%,transparent);border-radius:3cqw;padding:3.2cqw}
-.grid b{display:block;font-weight:900;font-size:min(8.4cqw,var(--fs,8.4cqw));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.04em;color:var(--ac);line-height:1}
+.grid b{display:block;font-weight:800;font-size:min(8.4cqw,var(--fs,8.4cqw));white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.04em;color:var(--ac);line-height:1}
 .grid span{font:600 2.9cqw/1.2 var(--mono);text-transform:uppercase;letter-spacing:.06em;opacity:.7}
 .acts{display:flex;gap:2.4cqw;position:relative;z-index:30}
 .btn{all:unset;cursor:pointer;flex:1;text-align:center;padding:3.6cqw;border-radius:99px;font-weight:800;font-size:4cqw;background:var(--ac);color:var(--bg)}
@@ -135,20 +144,27 @@ const T = {
     youare: 'Você é', personas: {
       owl: ['Coruja da madrugada', '🦉', p => `${p}% dos seus commits saíram entre meia-noite e 5h. O deploy de produção agradece (ou não).`],
       weekend: ['Guerreiro do fim de semana', '⚔️', p => `${p}% dos commits caíram no sábado ou no domingo. Descanso é um conceito.`],
-      early: ['Madrugador', '☀️', () => 'Você commita antes do café esfriar.'],
-      night: ['Turno da noite', '🌙', () => 'Seu código acorda quando o sol se põe.'],
-      office: ['Expediente comercial', '💼', () => 'Das 9 às 18, constante como um cron job.'],
+      marathon: ['Maratonista', '🏃', p => `${p} dias seguidos commitando. Constância é o seu superpoder.`],
+      cleaner: ['Faxineiro de código', '🧹', p => `Para cada 100 linhas que escreveu, você apagou ${p}. Código bom é o que sobra.`],
+      firefighter: ['Bombeiro', '🧯', p => `${p}% dos seus commits foram correções. Pegou fogo, você estava lá.`],
+      polyglot: ['Poliglota', '🌍', p => `${p} linguagens com peso de verdade no seu ano. Você não escolhe, você domina.`],
+      burst: ['Modo turbo', '⚡', p => `${p}% dos seus commits saíram em só 10% dos dias. Quando você engata, ninguém segura.`],
+      loyal: ['Fiel ao projeto', '💍', p => `${p}% dos commits no mesmo repositório. Relacionamento sério.`],
+      early: ['Madrugador', '☀️', p => `${p}% dos commits antes das 9h. Você commita antes do café esfriar.`],
+      night: ['Turno da noite', '🌙', p => `${p}% dos commits depois das 18h. Seu código acorda quando o sol se põe.`],
+      office: ['Expediente comercial', '💼', p => `${p}% dos commits entre 9h e 18h. Constante como um cron job.`],
     },
     latest: 'O commit mais tarde', at: (d, r) => `${d} · ${r}`,
     langs: 'Suas linguagens', lines_: 'linhas', repos: 'Onde você mais mexeu',
     words: 'Palavras do ano', fixes: p => `<b>${p}%</b> dos seus commits foram correções. Ninguém escapa.`,
-    confess: 'Confissão', confessL: 'linhas que você não escreveu', confessP: t => `Mas commitou. A gente tirou da conta, tipo <b>${t}</b>. Seu segredo está seguro.`,
     biggest: 'O maior commit', blines: 'linhas de uma vez',
     weekdays: 'Seu dia da semana', wd: ['seg', 'ter', 'qua', 'qui', 'sex', 'sáb', 'dom'], bestwd: d => `<b>${d}</b> é o seu dia.`, wdFull: ['segunda', 'terça', 'quarta', 'quinta', 'sexta', 'sábado', 'domingo'],
-    firstlast: 'Do primeiro ao último', first: 'Primeiro', last: 'Último',
+    months: 'Seu ano, mês a mês', bestm: (m, n) => `<b>${m}</b> foi o seu mês, com <b>${n} commits</b>.`,
+    vs: y => `Em relação a ${y}`, c_commits: 'commits', c_days: 'dias ativos', c_streak: 'maior sequência', c_added: 'linhas escritas',
+    swapped: (a, b) => `Você trocou <b>${a}</b> por <b>${b}</b>.`, kept: a => `<b>${a}</b> segue no topo.`, vsShort: y => `vs ${y}`,
     summary: y => `Meu ${y} no git`, s_commits: 'commits', s_repos: 'repositórios', s_days: 'dias ativos', s_streak: 'dias seguidos',
     s_added: 'linhas escritas', s_lang: 'linguagem do ano', download: 'Baixar imagem', again: 'Ver de novo', made: 'gerado localmente com git-retro · nada saiu do seu computador',
-    cardTitle: y => `MEU ${y} NO GIT`, cardFoot: 'git-retro',
+    cardTitle: y => `MEU ${y} NO GIT`, cardFoot: 'git-retro', peakK: 'horário de pico', langsK: 'linguagens', cardCommits: 'commits',
   },
   en: {
     help: '← → to navigate · space pauses · press and hold also pauses',
@@ -163,20 +179,27 @@ const T = {
     youare: 'You are', personas: {
       owl: ['Night owl', '🦉', p => `${p}% of your commits landed between midnight and 5am. Production says thanks (or not).`],
       weekend: ['Weekend warrior', '⚔️', p => `${p}% of your commits happened on Saturday or Sunday. Rest is a concept.`],
-      early: ['Early bird', '☀️', () => 'You commit before the coffee gets cold.'],
-      night: ['Night shift', '🌙', () => 'Your code wakes up when the sun goes down.'],
-      office: ['Office hours', '💼', () => 'Nine to six, steady as a cron job.'],
+      marathon: ['Marathoner', '🏃', p => `${p} days in a row with commits. Consistency is your superpower.`],
+      cleaner: ['Code janitor', '🧹', p => `For every 100 lines you wrote, you deleted ${p}. Good code is what’s left.`],
+      firefighter: ['Firefighter', '🧯', p => `${p}% of your commits were fixes. Something caught fire, you were there.`],
+      polyglot: ['Polyglot', '🌍', p => `${p} languages carried real weight in your year.`],
+      burst: ['Turbo mode', '⚡', p => `${p}% of your commits came out on just 10% of your days. Once you get going, nobody stops you.`],
+      loyal: ['Loyal to one', '💍', p => `${p}% of your commits went to the same repository. Serious relationship.`],
+      early: ['Early bird', '☀️', p => `${p}% of your commits before 9am. Before the coffee gets cold.`],
+      night: ['Night shift', '🌙', p => `${p}% of your commits after 6pm. Your code wakes up when the sun goes down.`],
+      office: ['Office hours', '💼', p => `${p}% of your commits between 9 and 6. Steady as a cron job.`],
     },
     latest: 'Your latest commit', at: (d, r) => `${d} · ${r}`,
     langs: 'Your languages', lines_: 'lines', repos: 'Where you spent your time',
     words: 'Words of the year', fixes: p => `<b>${p}%</b> of your commits were fixes. Nobody escapes.`,
-    confess: 'Confession', confessL: 'lines you didn’t write', confessP: t => `But you committed them. We left them out, like <b>${t}</b>. Your secret is safe.`,
     biggest: 'Your biggest commit', blines: 'lines in one go',
     weekdays: 'Your weekday', wd: ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'], bestwd: d => `<b>${d}</b> is your day.`, wdFull: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
-    firstlast: 'First to last', first: 'First', last: 'Last',
+    months: 'Your year, month by month', bestm: (m, n) => `<b>${m}</b> was your month, with <b>${n} commits</b>.`,
+    vs: y => `Compared to ${y}`, c_commits: 'commits', c_days: 'active days', c_streak: 'longest streak', c_added: 'lines written',
+    swapped: (a, b) => `You swapped <b>${a}</b> for <b>${b}</b>.`, kept: a => `<b>${a}</b> is still on top.`, vsShort: y => `vs ${y}`,
     summary: y => `My ${y} in git`, s_commits: 'commits', s_repos: 'repositories', s_days: 'active days', s_streak: 'day streak',
     s_added: 'lines written', s_lang: 'language of the year', download: 'Download image', again: 'Watch again', made: 'generated locally with git-retro · nothing left your computer',
-    cardTitle: y => `MY ${y} IN GIT`, cardFoot: 'git-retro',
+    cardTitle: y => `MY ${y} IN GIT`, cardFoot: 'git-retro', peakK: 'peak hour', langsK: 'languages', cardCommits: 'commits',
   },
 }[L];
 document.documentElement.lang = L === 'pt' ? 'pt-BR' : 'en';
@@ -247,6 +270,12 @@ S.push({ th: 'violet', html: `${rv(`<div class="k">${esc(T.lines)}</div>`, 0)}
 S.push({ th: 'ink', html: `${rv(`<div class="h">${esc(T.yearbyday)}</div>`, 0)}${calendar()}
   ${rv(`<p class="p">${T.busiest(fd(D.busiest.date), D.busiest.commits)}</p>`, 1.3)}` });
 
+const mmax = Math.max(1, ...D.months), mbest = D.months.indexOf(mmax);
+const mname = (i, style) => new Date(D.year, i, 1).toLocaleDateString(L === 'pt' ? 'pt-BR' : 'en-US', { month: style }).replace('.', '');
+S.push({ th: 'paper', html: `${rv(`<div class="h">${esc(T.months)}</div>`, 0)}
+  <div class="weeks rv" style="--d:.1s;height:44cqw">${D.months.map((n, i) => `<div><i style="--i:${i};--h:${Math.max(3, n * 100 / mmax)}%${i === mbest ? '' : ';opacity:.35'}"></i><span>${mname(i, 'narrow')}</span></div>`).join('')}</div>
+  ${rv(`<p class="p">${T.bestm(mname(mbest, 'long'), mmax)}</p>`, 1.1)}` });
+
 S.push({ th: 'orange', html: `${rv(cnt(D.streak.length), 0)}${rv(`<div class="h">${esc(T.days)}</div>`, .2)}
   ${rv(`<p class="p">${D.streak.length > 1 ? esc(T.streak(fd(D.streak.start), fd(D.streak.end))) : esc(T.streak1)}</p>`, .5)}` });
 
@@ -254,20 +283,16 @@ const peak = D.hours.indexOf(Math.max(...D.hours));
 S.push({ th: 'blue', html: `${rv(`<div class="h">${esc(T.clock)}</div>`, 0)}${clock()}${rv(`<p class="p">${T.peak(peak)}</p>`, 1.2)}` });
 
 const wmax = Math.max(1, ...D.weekdays), wbest = D.weekdays.indexOf(wmax);
-S.push({ th: 'paper', html: `${rv(`<div class="h">${esc(T.weekdays)}</div>`, 0)}
+S.push({ th: 'lime', html: `${rv(`<div class="h">${esc(T.weekdays)}</div>`, 0)}
   <div class="weeks rv" style="--d:.1s">${D.weekdays.map((n, i) => `<div><i style="--i:${i};--h:${Math.max(4, n * 100 / wmax)}%${i === wbest ? '' : ';opacity:.35'}"></i><span>${T.wd[i]}</span></div>`).join('')}</div>
   ${rv(`<p class="p">${T.bestwd(T.wdFull[wbest])}</p>`, .9)}` });
 
-const pc = T.personas[D.persona], late = Math.round(D.hours.slice(0, 5).reduce((a, b) => a + b, 0) * 100 / tot.commits);
+const pc = T.personas[D.persona] || T.personas.office;
 S.push({ th: 'pink', html: `${rv(`<div class="k">${esc(T.youare)}</div>`, 0)}<div class="emoji pop" style="--d:.2s">${pc[1]}</div>
-  <div class="h" style="font-size:12cqw">${chars(pc[0], .45)}</div>${rv(`<p class="p">${esc(pc[2](D.persona === 'owl' ? late : D.weekend_pct))}</p>`, 1.1)}` });
+  <div class="h" style="font-size:12cqw">${chars(pc[0], .45)}</div>${rv(`<p class="p">${esc(pc[2](D.persona_value))}</p>`, 1.1)}` });
 
 if (D.night && D.night.message) S.push({ th: 'ink', html: `${rv(`<div class="k">${esc(T.latest)}</div>`, 0)}
   <div class="huge">${chars(D.night.time, .15)}</div>${rv(`<p class="q">${esc(D.night.message)}</p>`, .7)}${rv(`<div class="meta">${esc(T.at(fd(D.night.date), D.night.repo))}</div>`, .9)}` });
-
-if (D.ignored && D.ignored.lines > 20000) S.push({ th: 'pink', html: `${rv(`<div class="k">${esc(T.confess)}</div>`, 0)}
-  ${rv(cnt(D.ignored.lines), .15)}${rv(`<div class="h">${esc(T.confessL)}</div>`, .3)}
-  ${rv(`<p class="p">${T.confessP(esc(D.ignored.top))}</p>`, .6)}` });
 
 if (D.langs.length) S.push({ th: 'paper', html: `${rv(`<div class="h">${esc(T.langs)}</div>`, 0)}
   ${hbars(D.langs, r => r.lines, r => `${r.name} · ${String(r.pct).replace('.', L === 'pt' ? ',' : '.')}%`, r => r.color)}` });
@@ -275,7 +300,7 @@ if (D.langs.length) S.push({ th: 'paper', html: `${rv(`<div class="h">${esc(T.la
 S.push({ th: 'violet', html: `${rv(`<div class="h">${esc(T.repos)}</div>`, 0)}${hbars(D.repos, r => r.commits, r => r.name)}
   ${rv(`<div class="meta">${esc(T.commits)}</div>`, 1)}` });
 
-if (D.words.length) { const wm = D.words[0][1];
+if (D.words.length >= 4 && D.words[0][1] >= 3) { const wm = D.words[0][1];
   S.push({ th: 'lime', html: `${rv(`<div class="h">${esc(T.words)}</div>`, 0)}
     <div class="words">${D.words.map(([w, n], i) => `<span class="pop" style="--d:${.2 + i * .09}s;font-size:${5 + 9 * (n / wm)}cqw;opacity:${.45 + .55 * (n / wm)}">${esc(w)}</span>`).join('')}</div>
     ${D.fix_pct ? rv(`<p class="p">${T.fixes(D.fix_pct)}</p>`, 1.1) : ''}` }); }
@@ -283,11 +308,16 @@ if (D.words.length) { const wm = D.words[0][1];
 if (D.biggest && D.biggest.lines) S.push({ th: 'orange', html: `${rv(`<div class="k">${esc(T.biggest)}</div>`, 0)}${rv(cnt(D.biggest.lines), .1)}
   ${rv(`<div class="h">${esc(T.blines)}</div>`, .3)}${D.biggest.message ? rv(`<p class="q">${esc(D.biggest.message)}</p>`, .6) : ''}${rv(`<div class="meta">${esc(T.at(fd(D.biggest.date), D.biggest.repo))}</div>`, .8)}` });
 
-if (D.first.message) S.push({ th: 'blue', html: `${rv(`<div class="h">${esc(T.firstlast)}</div>`, 0)}
-  ${rv(`<div class="k">${esc(T.first)} · ${esc(fd(D.first.date))}</div><p class="q">${esc(D.first.message)}</p><div class="meta">${esc(D.first.repo)}</div>`, .2)}
-  ${rv(`<div class="k">${esc(T.last)} · ${esc(fd(D.last.date))}</div><p class="q">${esc(D.last.message)}</p><div class="meta">${esc(D.last.repo)}</div>`, .6)}` });
-
 const topLang = D.langs[0] ? D.langs[0].name : '—';
+const delta = (now, before) => { if (!before) return null; const p = Math.round((now - before) * 100 / before); return { p, txt: (p > 0 ? '+' : p < 0 ? '−' : '±') + Math.abs(p) + '%' }; };
+const P = D.prev;
+if (P && P.commits >= 10) {
+  const rows = [[T.c_commits, tot.commits, P.commits], [T.c_days, tot.active_days, P.active_days], [T.c_streak, D.streak.length, P.streak], [T.c_added, tot.added, P.added]];
+  S.push({ th: 'blue', html: `${rv(`<div class="h">${esc(T.vs(P.year))}</div>`, 0)}
+    <div class="cmp">${rows.map(([k, now, before], i) => { const d = delta(now, before);
+      return rv(`<div class="r"><span class="l">${esc(k)} · ${nf(before)} → ${nf(now)}</span><span class="v">${nf(now)}</span>${d ? `<span class="d ${d.p < 0 ? 'dn' : ''}">${d.txt}</span>` : ''}</div>`, .15 + i * .12); }).join('')}</div>
+    ${P.top_lang && D.langs[0] ? rv(`<p class="p">${P.top_lang !== topLang ? T.swapped(esc(P.top_lang), esc(topLang)) : T.kept(esc(topLang))}</p>`, .8) : ''}` });
+}
 S.push({ th: 'ink', last: true, cls: 'summary', html: `${rv(`<div class="h">${esc(T.summary(D.year))}</div>`, 0)}
   <div class="grid">${[[nf(tot.commits), T.s_commits], [nf(tot.repos), T.s_repos], [nf(tot.active_days), T.s_days], [nf(D.streak.length), T.s_streak], [nf(tot.added), T.s_added], [topLang, T.s_lang]]
     .map(([v, k], i) => `<div class="pop" style="--d:${.15 + i * .07}s"><b style="--fs:${34 / (String(v).length * .6)}cqw">${esc(v)}</b><span>${esc(k)}</span></div>`).join('')}</div>
@@ -351,39 +381,98 @@ $('#dl').addEventListener('click', downloadCard);
 go(0); raf = requestAnimationFrame(loop);
 
 /* ---------- cartão para compartilhar (1080×1920) ---------- */
-function downloadCard() {
+async function downloadCard() {
+  const btn = $('#dl'); btn.disabled = true;
+  try { await Promise.all(['800 100px Retro', '500 40px Retro', '600 30px RetroMono'].map(f => document.fonts.load(f))); } catch (e) {}
   const W = 1080, H = 1920, cv = document.createElement('canvas'); cv.width = W; cv.height = H;
   const c = cv.getContext('2d'), css = getComputedStyle(document.documentElement);
-  const ink = '#0E0E11', paper = '#F4F0E6', lime = '#C6FF3D', SANS = css.getPropertyValue('--sans'), MONO = css.getPropertyValue('--mono');
+  const ink = '#0E0E11', paper = '#F4F0E6', lime = '#C6FF3D', pink = '#FF8AD0';
+  const SANS = css.getPropertyValue('--sans'), MONO = css.getPropertyValue('--mono');
+  const X = 84, CW = W - 2 * X;
+  const font = (w, px, f = SANS) => { c.font = `${w} ${px}px ${f}`; };
+  const fit = (txt, w, px, maxW, f = SANS) => { let s = px; do { font(w, s, f); s -= 2; } while (c.measureText(txt).width > maxW && s > 16); };
+  const track = (txt, px) => { try { c.letterSpacing = px + 'px'; } catch (e) {} };
   c.fillStyle = ink; c.fillRect(0, 0, W, H);
-  const fit = (txt, weight, size, maxW, font = SANS) => { let s = size; do { c.font = `${weight} ${s}px ${font}`; s -= 4; } while (c.measureText(txt).width > maxW && s > 20); };
-  c.fillStyle = paper; c.font = `600 34px ${MONO}`; c.fillText(T.cardTitle(D.year), 90, 170);
-  c.fillStyle = lime; fit(nf(tot.commits), 900, 340, W - 180); c.fillText(nf(tot.commits), 80, 480);
-  c.fillStyle = paper; c.font = `800 72px ${SANS}`; c.fillText(T.commits, 90, 570);
-  const cells = [[nf(tot.repos), T.s_repos], [nf(tot.active_days), T.s_days], [nf(D.streak.length), T.s_streak], [nf(tot.added), T.s_added]];
+
+  // brilho no canto, na cor da página
+  const g = c.createRadialGradient(W - 80, 120, 0, W - 80, 120, 760); g.addColorStop(0, 'rgba(198,255,61,.22)'); g.addColorStop(1, 'rgba(198,255,61,0)');
+  c.fillStyle = g; c.fillRect(0, 0, W, H);
+
+  // topo
+  c.fillStyle = paper; font(600, 30, MONO); track('', 3); c.fillText(T.cardTitle(D.year), X, 132);
+  if (D.name) { c.textAlign = 'right'; c.globalAlpha = .6; c.fillText(String(D.name).toUpperCase().slice(0, 22), W - X, 132); c.globalAlpha = 1; c.textAlign = 'left'; }
+  track('', 0);
+
+  // número principal
+  const num = nf(tot.commits);
+  c.fillStyle = lime; track('', -14); fit(num, 800, 330, CW); c.fillText(num, X - 8, 440); track('', 0);
+  c.fillStyle = paper; font(800, 64); c.fillText(T.cardCommits, X, 530);
+  const dc = P && P.commits >= 10 ? delta(tot.commits, P.commits) : null;
+  if (dc) {
+    const lbl = `${dc.txt} ${T.vsShort(P.year)}`; font(800, 40); const w = c.measureText(lbl).width + 48;
+    font(800, 64); const x1 = X + c.measureText(T.cardCommits).width + 28;
+    c.fillStyle = dc.p >= 0 ? lime : 'transparent'; c.strokeStyle = lime; c.lineWidth = 3;
+    c.beginPath(); c.roundRect(x1, 478, w, 66, 33); dc.p >= 0 ? c.fill() : c.stroke();
+    c.fillStyle = dc.p >= 0 ? ink : lime; font(800, 40); c.fillText(lbl, x1 + 24, 524);
+  }
+
+  // calendário do ano em duas metades
+  const y0 = 620, cols = 27, gap = 6, cs = (CW - (cols - 1) * gap) / cols, maxd = Math.max(1, ...Object.values(D.days));
+  const start = new Date(D.year, 0, 1), off = (start.getDay() + 6) % 7;
+  c.globalAlpha = .55; c.fillStyle = paper; font(600, 22, MONO);
+  const mshort = i => new Date(D.year, i, 1).toLocaleDateString(L === 'pt' ? 'pt-BR' : 'en-US', { month: 'short' }).replace('.', '').toUpperCase();
+  c.fillText(`${mshort(0)} – ${mshort(5)}`, X, y0 - 14); c.fillText(`${mshort(6)} – ${mshort(11)}`, X, y0 + 7 * (cs + gap) + 40 - 14); c.globalAlpha = 1;
+  for (let d = new Date(start); d.getFullYear() === D.year; d.setDate(d.getDate() + 1)) {
+    const doy = Math.round((d - start) / 864e5), wk = Math.floor((doy + off) / 7), row = (d.getDay() + 6) % 7, part = wk < cols ? 0 : 1, col = wk - part * cols;
+    const iso = `${D.year}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`, n = D.days[iso] || 0;
+    const lv = n ? Math.ceil(Math.min(1, n / (maxd * .6)) * 4) : 0;
+    c.fillStyle = lv ? lime : paper; c.globalAlpha = [.08, .32, .55, .8, 1][lv];
+    c.beginPath(); c.roundRect(X + col * (cs + gap), y0 + part * (7 * (cs + gap) + 40) + row * (cs + gap), cs, cs, 6); c.fill();
+  }
+  c.globalAlpha = 1;
+  let y = y0 + 2 * 7 * (cs + gap) + 40 + 40;
+
+  // três números
+  const peakH = D.hours.indexOf(Math.max(...D.hours));
+  const cells = [[nf(tot.active_days), T.s_days], [nf(D.streak.length), T.s_streak], [L === 'pt' ? `${peakH}h` : `${peakH}:00`, T.peakK]];
+  const bw = (CW - 2 * 24) / 3;
   cells.forEach(([v, k], i) => {
-    const x = 90 + (i % 2) * 460, y = 660 + Math.floor(i / 2) * 230;
-    c.strokeStyle = 'rgba(244,240,230,.18)'; c.lineWidth = 2; c.beginPath(); c.roundRect(x, y, 440, 200, 28); c.stroke();
-    c.fillStyle = lime; fit(v, 900, 96, 380); c.fillText(v, x + 32, y + 115);
-    c.fillStyle = 'rgba(244,240,230,.7)'; c.font = `600 26px ${MONO}`; c.fillText(k.toUpperCase(), x + 32, y + 165);
+    const x = X + i * (bw + 24);
+    c.strokeStyle = 'rgba(244,240,230,.2)'; c.lineWidth = 2; c.beginPath(); c.roundRect(x, y, bw, 170, 26); c.stroke();
+    c.fillStyle = paper; fit(v, 800, 88, bw - 56); c.fillText(v, x + 28, y + 98);
+    c.globalAlpha = .6; font(600, 22, MONO); track('', 2); c.fillText(k.toUpperCase(), x + 28, y + 140); track('', 0); c.globalAlpha = 1;
   });
-  // linguagens
-  let y = 1180; c.fillStyle = paper; c.font = `600 30px ${MONO}`; c.fillText((L === 'pt' ? 'LINGUAGENS' : 'LANGUAGES'), 90, y);
-  const lt = D.langs.slice(0, 4), lmax = Math.max(1, ...lt.map(l => l.lines));
-  lt.forEach((l, i) => {
-    const yy = y + 50 + i * 78;
-    c.fillStyle = paper; c.font = `800 40px ${SANS}`; c.fillText(l.name, 90, yy + 30);
-    c.fillStyle = 'rgba(244,240,230,.12)'; c.beginPath(); c.roundRect(420, yy + 6, 570, 26, 13); c.fill();
-    c.fillStyle = l.color; c.beginPath(); c.roundRect(420, yy + 6, Math.max(26, 570 * l.lines / lmax), 26, 13); c.fill();
+  y += 170 + 60;
+
+  // linguagens: uma barra só, empilhada
+  const lt = D.langs.slice(0, 5), lsum = lt.reduce((a, l) => a + l.lines, 0) || 1;
+  c.globalAlpha = .6; c.fillStyle = paper; font(600, 22, MONO); track('', 2); c.fillText(T.langsK.toUpperCase(), X, y); track('', 0); c.globalAlpha = 1;
+  y += 26; let x = X;
+  c.save(); c.beginPath(); c.roundRect(X, y, CW, 34, 17); c.clip();
+  lt.forEach(l => { const w = CW * l.lines / lsum; c.fillStyle = l.color; c.fillRect(x, y, w + 1, 34); x += w; });
+  c.restore();
+  y += 34 + 50; x = X;
+  lt.slice(0, 3).forEach(l => {
+    c.fillStyle = l.color; c.beginPath(); c.arc(x + 11, y - 13, 11, 0, 7); c.fill();
+    c.fillStyle = paper; font(800, 36); const tx = `${l.name} ${Math.round(l.pct)}%`; c.fillText(tx, x + 32, y); x += c.measureText(tx).width + 80;
   });
-  // persona
-  y = 1590; c.fillStyle = lime; c.beginPath(); c.roundRect(90, y, 900, 150, 75); c.fill();
-  c.fillStyle = ink; fit(`${pc[1]}  ${pc[0]}`, 900, 64, 820); c.textAlign = 'center'; c.fillText(`${pc[1]}  ${pc[0]}`, W / 2, y + 98); c.textAlign = 'left';
-  c.fillStyle = 'rgba(244,240,230,.5)'; c.font = `500 28px ${MONO}`; c.fillText(T.cardFoot, 90, 1840);
+  y += 52;
+
+  // personalidade: ocupa o que sobra até o rodapé
+  const ph = Math.max(170, H - 150 - y);
+  c.fillStyle = pink; c.beginPath(); c.roundRect(X, y, CW, ph, 40); c.fill();
+  c.fillStyle = ink; c.globalAlpha = .7; font(600, 24, MONO); track('', 3); c.fillText(T.youare.toUpperCase(), X + 48, y + 66); track('', 0); c.globalAlpha = 1;
+  font(800, 96, SANS); c.fillText(pc[1], X + 44, y + ph / 2 + 58);
+  fit(pc[0], 800, 76, CW - 240); c.fillText(pc[0], X + 196, y + ph / 2 + 50);
+
+  // rodapé
+  c.fillStyle = paper; c.globalAlpha = .45; font(600, 24, MONO); c.fillText('github.com/Ryuks-py/git-retro', X, H - 70); c.globalAlpha = 1;
+
   cv.toBlob(b => {
+    btn.disabled = false;
     const f = new File([b], `git-retro-${D.year}.png`, { type: 'image/png' });
     if (navigator.canShare && navigator.canShare({ files: [f] }) && matchMedia('(pointer:coarse)').matches) { navigator.share({ files: [f] }).catch(() => {}); return; }
-    const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = f.name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = f.name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
   }, 'image/png');
 }
 </script>

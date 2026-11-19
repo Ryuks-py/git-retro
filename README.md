@@ -1,6 +1,6 @@
 # git retro
 
-**Your year in git, as an animated story you can share.** One command reads the repositories on your machine (private ones included) and turns your commits into a Wrapped-style page: your busiest day, your longest streak, the hour you code the most, your languages, your latest-night commit and the lines you committed but never wrote.
+**Your year in git, as an animated story you can share.** One command reads the repositories on your machine (private ones included) and turns your commits into a Wrapped-style page: your busiest day, your longest streak, the hour you code the most, your languages, your latest-night commit, how you compare to last year and the kind of developer your commits say you are.
 
 It runs **100% locally**. No account, no token, no upload. Your code never leaves your computer.
 
@@ -31,18 +31,38 @@ Python 3.9+ and `git`. No other dependencies.
 | Commits | total, repositories, active days, average per day |
 | Lines | written vs. deleted |
 | Your year, day by day | a calendar heatmap and your busiest day |
+| Month by month | your most productive month |
 | Streak | most days in a row with at least one commit |
 | Your clock | a 24-hour radial chart and your peak hour |
 | Your weekday | which day you commit the most |
-| You are… | a persona: *Night owl*, *Weekend warrior*, *Early bird*, *Night shift* or *Office hours* |
+| You are… | your strongest trait, out of 11 personas (below) |
 | Latest commit | the commit closest to dawn, with its message |
-| Confession | lines from `venv/`, `node_modules/`, build output and huge imports you committed (left out of every other number) |
 | Languages | share of changed lines per language |
 | Repositories | where you spent your time |
 | Words of the year | the words you used most in commit messages, and how many commits were fixes |
 | Biggest commit | the largest change you made in one go |
-| First to last | your first and last commit of the year |
+| Compared to last year | commits, active days, streak and lines vs. the year before, and whether your top language changed |
 | Summary | everything on one card, with a **Download image** button (1080×1920, ready for stories) |
+
+![The share card](docs/card.png)
+
+### Personas
+
+Each one is a measured trait. The page picks the one where you stand out the most; *Office hours* only shows up when nothing else does.
+
+| | Persona | When |
+|---|---|---|
+| 🦉 | Night owl | 12%+ of commits between midnight and 5am |
+| ⚔️ | Weekend warrior | 30%+ on Saturday or Sunday |
+| 🏃 | Marathoner | a streak of 21+ days |
+| 🧹 | Code janitor | deleted 60%+ of what you wrote |
+| 🧯 | Firefighter | 35%+ of commits are fixes |
+| 🌍 | Polyglot | 4+ languages with at least 5% each |
+| ⚡ | Turbo mode | 30%+ of commits on your busiest 10% of days |
+| 💍 | Loyal to one | 80%+ of commits in one repository |
+| ☀️ | Early bird | 25%+ before 9am |
+| 🌙 | Night shift | 35%+ after 6pm |
+| 💼 | Office hours | none of the above |
 
 Navigate with **← →**, tap the sides, or swipe. Space pauses; press and hold also pauses.
 
@@ -76,11 +96,12 @@ Sharing the page from work? `--no-messages --anonymize` keeps the stats and drop
 
 - Only commits **authored** in the chosen year, by you, across all branches, without merge commits. The same commit in two clones counts once.
 - Lines ignore dependency and build folders (`node_modules`, `venv*`, `site-packages`, `vendor`, `dist`, `build`, migrations…), lock files, minified files, images and fonts.
-- A single file with more than 5,000 changed lines, a data file (JSON, CSV, SQL…) with more than 1,500, or a whole commit with more than 30,000 is treated as generated or imported. Those lines go to the *Confession* slide instead.
+- A single file with more than 5,000 changed lines, a data file (JSON, CSV, SQL…) with more than 1,500, or a whole commit with more than 30,000 is treated as generated or imported.
+- What was left out is reported only in your terminal, never on the page you share.
 
 ## Privacy
 
-The output is a single HTML file with the numbers inside. It loads no fonts, scripts or images from anywhere, so it works offline and makes no network requests. What ends up in it: aggregate stats, repository names and a few commit messages (latest, biggest, first and last). Use `--no-messages` and `--anonymize` to remove them.
+The output is a single HTML file with the numbers and fonts inside. It loads nothing from anywhere, so it works offline and makes no network requests. What ends up in it: aggregate stats, repository names, your most used commit words and two commit messages (latest and biggest). Use `--no-messages` and `--anonymize` to remove them.
 
 ## Development
 
@@ -91,14 +112,14 @@ python3 -m git_retro --demo        # regenerate with fake data
 
 ## License
 
-MIT
+MIT. Bundled fonts: [Bricolage Grotesque](https://github.com/ateliertriay/bricolage) and [JetBrains Mono](https://github.com/JetBrains/JetBrainsMono), both under the SIL Open Font License (see `git_retro/fonts/`).
 
 ---
 
 <details>
 <summary><b>Em português</b></summary>
 
-**A sua retrospectiva do ano no git, em formato de stories.** Um comando lê os repositórios do seu computador (inclusive os privados) e gera uma página animada: dia mais intenso, maior sequência, horário em que você mais programa, linguagens, o commit mais tarde da noite e as linhas que você commitou sem ter escrito.
+**A sua retrospectiva do ano no git, em formato de stories.** Um comando lê os repositórios do seu computador (inclusive os privados) e gera uma página animada: dia mais intenso, maior sequência, horário em que você mais programa, linguagens, o commit mais tarde da noite, a comparação com o ano anterior e que tipo de programador seus commits dizem que você é.
 
 Roda **100% local**: sem conta, sem token, sem upload.
 

@@ -58,7 +58,7 @@ class GitRetroTest(unittest.TestCase):
 
     def test_vendor_lines_are_left_out(self):
         d, _ = self.data()
-        self.assertEqual(d["ignored"]["lines"], 900)
+        self.assertEqual(d["_ignored"]["lines"], 900)
         self.assertEqual(d["totals"]["added"], 10 + 12 + 5)
         self.assertEqual(d["totals"]["removed"], 10)
         self.assertEqual(d["langs"][0]["name"], "Python")

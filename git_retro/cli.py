@@ -10,7 +10,7 @@ from datetime import date
 from pathlib import Path
 
 from . import __version__
-from .core import compute, config_emails, find_repos, read_commits, resolve_identity, top_authors
+from .core import compute, summary, config_emails, find_repos, read_commits, resolve_identity, top_authors
 from .render import render
 
 
@@ -45,6 +45,7 @@ def main(argv=None):
     if a.demo:
         from .demo import demo_commits
         mine = demo_commits(year, lang=lang)
+        prev = demo_commits(year - 1, seed=3, lang=lang, scale=.7)
         name = a.name or ("Você" if lang == "pt" else "You")
     else:
         repos = find_repos(a.paths, a.depth)
@@ -55,6 +56,7 @@ def main(argv=None):
         say(f"→ {len(repos)} repositórios encontrados, lendo commits de {year}…",
             f"→ found {len(repos)} repositories, reading {year} commits…")
         commits = [c for r in repos for c in read_commits(r, year)]
+        before = [c for r in repos for c in read_commits(r, year - 1)]
         if not commits:
             say(f"Nenhum commit em {year} nesses repositórios.", f"No commits in {year} in those repositories.")
             return 1
@@ -65,8 +67,9 @@ def main(argv=None):
             seeds = {email}
             say(f"  (sem user.email configurado; usando quem mais commitou: {nm} <{email}>)",
                 f"  (no user.email configured; using the top committer: {nm} <{email}>)")
-        emails, names = resolve_identity(commits, seeds, names)
+        emails, names = resolve_identity(commits + before, seeds, names)
         mine = [c for c in commits if c.email in emails or c.name.lower() in names]
+        prev = [c for c in before if c.email in emails or c.name.lower() in names]
         say(f"  você = {', '.join(sorted(emails))}", f"  you = {', '.join(sorted(emails))}")
         if not mine:
             say("Nenhum commit seu encontrado. Quem aparece nesses repositórios:",
@@ -79,11 +82,17 @@ def main(argv=None):
 
     data = compute(mine, year, show_messages=not a.no_messages, anonymize=a.anonymize, name=name)
     data["lang"] = lang
+    data["prev"] = summary(compute(prev, year - 1)) if prev else None
+    ign = data.pop("_ignored")
     out = Path(a.output or f"git-retro-{year}.html")
     out.write_text(render(data), encoding="utf-8")
     t = data["totals"]
     say(f"✓ {t['commits']} commits em {t['repos']} repositórios → {out}",
         f"✓ {t['commits']} commits across {t['repos']} repositories → {out}")
+    if ign["lines"]:
+        n = f"{ign['lines']:,}".replace(",", "." if lang == "pt" else ",")
+        say(f"  ({n} linhas de dependências, build e importações ficaram fora da conta; a maior parte em {ign['top']})",
+            f"  ({n} lines of dependencies, build output and imports were left out; mostly {ign['top']})")
     if not a.no_open:
         webbrowser.open(out.resolve().as_uri())
     return 0

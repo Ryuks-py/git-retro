@@ -33,7 +33,7 @@ MSGS_EN = [
 ]
 
 
-def demo_commits(year: int, seed: int = 7, lang: str = "en"):
+def demo_commits(year: int, seed: int = 7, lang: str = "en", scale: float = 1.0):
     rnd = random.Random(seed)
     tz = timezone(timedelta(hours=-3))
     msgs = MSGS if lang == "pt" else MSGS_EN
@@ -42,7 +42,7 @@ def demo_commits(year: int, seed: int = 7, lang: str = "en"):
     day = datetime(year, 1, 1, tzinfo=tz)
     n = 0
     while day.year == year:
-        busy = .82 if day.weekday() < 5 else .35
+        busy = (.82 if day.weekday() < 5 else .35) * scale
         if rnd.random() < busy:
             for _ in range(rnd.choice([1, 1, 2, 2, 3, 4, 6])):
                 h = rnd.choices(range(24), weights=[3, 2, 1, .5, .2, .1, .3, 1, 3, 6, 8, 8, 4, 6, 8, 8, 7, 5, 3, 3, 4, 5, 5, 4])[0]
