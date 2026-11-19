@@ -1,5 +1,7 @@
 # git retro
 
+[![PyPI](https://img.shields.io/pypi/v/git-retro)](https://pypi.org/project/git-retro/) [![tests](https://github.com/Ryuks-py/git-retro/actions/workflows/test.yml/badge.svg)](https://github.com/Ryuks-py/git-retro/actions/workflows/test.yml)
+
 **Your year in git, as an animated story you can share.** One command reads the repositories on your machine (private ones included) and turns your commits into a Wrapped-style page: your busiest day, your longest streak, the hour you code the most, your languages, your latest-night commit, how you compare to last year and the kind of developer your commits say you are.
 
 It runs **100% locally**. No account, no token, no upload. Your code never leaves your computer.
@@ -11,16 +13,10 @@ It runs **100% locally**. No account, no token, no upload. Your code never leave
 ## Quick start
 
 ```bash
-pipx install git+https://github.com/Ryuks-py/git-retro
-git-retro ~/code
+pipx run git-retro ~/code
 ```
 
-That's it: it finds every repository under `~/code`, keeps only your commits from this year and opens the page in your browser. Or try it without installing:
-
-```bash
-git clone https://github.com/Ryuks-py/git-retro && cd git-retro
-python3 -m git_retro ~/code
-```
+That's it: it finds every repository under `~/code`, keeps only your commits from this year and opens the page in your browser. To keep it around: `pipx install git-retro` (or `pip install git-retro`).
 
 Python 3.10+ and `git`. No other dependencies.
 
@@ -139,8 +135,7 @@ MIT. Bundled fonts: [Bricolage Grotesque](https://github.com/ateliertriay/bricol
 Roda **100% local**: sem conta, sem token, sem upload.
 
 ```bash
-pipx install git+https://github.com/Ryuks-py/git-retro
-git-retro ~/projetos
+pipx run git-retro ~/projetos
 ```
 
 A página sai em português se o seu sistema estiver em português (ou use `--lang pt`). Usa mais de um e-mail nos commits? Ele junta sozinho os e-mails que aparecem com o mesmo nome; se precisar, passe `--author` quantas vezes quiser. Para compartilhar sem expor cliente nem projeto: `--no-messages --anonymize`.
