@@ -22,7 +22,7 @@ git clone https://github.com/Ryuks-py/git-retro && cd git-retro
 python3 -m git_retro ~/code
 ```
 
-Python 3.9+ and `git`. No other dependencies.
+Python 3.10+ and `git`. No other dependencies.
 
 ## What's inside
 
