@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68"]
+requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -8,12 +8,12 @@ version = "0.2.0"
 description = "Your year in git as an animated, shareable story page. Runs 100% locally, zero dependencies."
 readme = "README.md"
 requires-python = ">=3.10"
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE", "git_retro/fonts/OFL-*.txt"]
 authors = [{ name = "David Montanha" }]
 keywords = ["git", "wrapped", "year in review", "statistics", "cli", "developer-tools"]
 classifiers = [
   "Programming Language :: Python :: 3",
-  "License :: OSI Approved :: MIT License",
   "Environment :: Console",
   "Topic :: Software Development :: Version Control :: Git",
 ]
